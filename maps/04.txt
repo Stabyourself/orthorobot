@@ -1,0 +1,7 @@
+height=6
+name=The Stairs
+text=The CSWP works from the four sides and from the top too! When viewed from the top, red blocks are unpassable though.
+time=1.5
+steps=6
+warps=1
+coins=2

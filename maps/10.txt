@@ -1,0 +1,6 @@
+height=3
+name=Stroll
+warps=4
+time=10
+steps=24
+coins=2

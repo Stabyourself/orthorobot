@@ -1,0 +1,7 @@
+height=4
+name=Unbounded
+text=Remember that you can move in the 3D view, too.
+time=8
+steps=21
+warps=5
+coins=2

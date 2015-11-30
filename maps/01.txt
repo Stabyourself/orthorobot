@@ -1,0 +1,7 @@
+height=2
+name=Easy Start
+text=Hello fellow Robot! I see you're low on battery. Simply move to any green block to recharge yourself! It's robot-easy.
+time=1.5
+steps=0
+warps=0
+coins=2

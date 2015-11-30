@@ -1,0 +1,7 @@
+height=3
+name=Warped
+text=You don't actually need to stand on the recharge block to win the level. Standing on it in the warped 2D space is enough.
+time=4
+steps=8
+warps=3
+coins=2

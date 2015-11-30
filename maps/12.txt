@@ -1,0 +1,6 @@
+height=6
+name=Cling
+warps=5
+time=8
+steps=11
+coins=5

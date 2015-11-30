@@ -1,0 +1,7 @@
+height=2
+name=Nearest
+text=When changing back to unwarped 3D perspective, you will move to the nearest possible block if not standing on one. Robotastic!
+time=3
+steps=7
+warps=2
+coins=1

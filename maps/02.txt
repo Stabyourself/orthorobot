@@ -1,0 +1,7 @@
+height=2
+name=The CSWP
+text=Sometimes, the path may not be as obvious. Activate the Corrective Space Warp Device by dragging with your mouse. Look at this scene from the side!
+time=1.5
+steps=6
+warps=1
+coins=1

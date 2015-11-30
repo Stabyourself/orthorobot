@@ -1,0 +1,7 @@
+height=3
+name=Red/Green
+text=You cannot flatten the world when you're in front or behind a wall in the perspective. The background will turn green if the world is successfully warped.
+time=2
+steps=6
+warps=1
+coins=2

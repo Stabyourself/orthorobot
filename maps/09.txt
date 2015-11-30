@@ -1,0 +1,7 @@
+height=3
+name=Layered
+text=Beat all the goals and collect all coins in a level to goldstar it! Good luck.
+time=7
+steps=9
+warps=5
+coins=1

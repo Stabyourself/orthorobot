@@ -1,0 +1,6 @@
+height=7
+name=Flagpole
+time=10
+steps=16
+warps=6
+coins=4

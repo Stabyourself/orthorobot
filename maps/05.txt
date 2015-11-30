@@ -1,0 +1,7 @@
+height=2
+name=Red Blocks
+text=While you cannot walk over red blocks when viewed from the top, you can in the unwarped 3D view.
+time=2
+steps=5
+warps=2
+coins=1
