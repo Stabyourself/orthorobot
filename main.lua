@@ -1,17 +1,37 @@
 --ORTHO ROBOT
 --by Maurice Guégan
 --Stabyourself.net
+--Made in 7 days for a competition (Total time: ~50 hours)
 
---music credits:
---Menu background: Trooped by BlueAngelEagle
---Game background: oh by Capsadmin
+--Music credits:
+--Menu background: "Trooped" by BlueAngelEagle
+--Game background: "oh" by Capsadmin
 
 --Other credits
 --yay.png (star) by http://www.psdgraphics.com/
 
 --LICENSE
---http://creativecommons.org/licenses/by-nc-sa/3.0/
---YOU MAY ALSO PRINT OUT THIS CODE AND PLASTER IT ALL OVER YOUR CAR/BIKE (unless your car sucks)
+--[[
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+              Version 2, December 2004
+
+	Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
+
+			DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+	0. You just DO WHAT THE FUCK YOU WANT TO.
+]]
+
+--0.9.0 stuff
+math.mod = math.fmod
+if not love.graphics.drawq then
+	love.graphics.drawq = love.graphics.draw
+end
 
 local lg_polygon = love.graphics.polygon
 local lg_setColor = love.graphics.setColor
@@ -46,9 +66,6 @@ function love.load()
 	drawfaces = true
 	drawgrid = true
 	
-	screenwidth = 1024
-	screenheight = 768
-	
 	currentmap = 1
 	unlockedlevels = 1
 	
@@ -59,6 +76,9 @@ function love.load()
 	
 	currentbackground = {0, 0, 0}
 	wantedbackground = {0, 0, 0}
+	
+	shadowfactor = 0.8
+	shadowtopfactor = 0.2
 	
 	backgroundblocks = {}
 	rainbowi = math.random()
@@ -71,7 +91,6 @@ function love.load()
 	rotatespeed = math.pi/500
 	pitchspeed = math.pi/1000
 	
-	love.graphics.setLineWidth(1)
 	love.graphics.setPointSize(5)
 	
 	maxpitch = 1
@@ -95,7 +114,7 @@ function love.load()
 	logoblood = love.graphics.newImage("stabyourselfblood.png")
 	
 	playerimg = love.graphics.newImage("player.png");playerimg:setFilter("nearest", "nearest")
-	playerquad = {love.graphics.newQuad(0, 0, 20, 20, 64, 32), love.graphics.newQuad(20, 0, 20, 20, 64, 32)}
+	playerquad = {love.graphics.newQuad(0, 0, 20, 20, 40, 20), love.graphics.newQuad(20, 0, 20, 20, 40, 20)}
 	
 	coinimg = love.graphics.newImage("coin.png");coinimg:setFilter("nearest", "nearest")
 	scanlineimg = love.graphics.newImage("scanlines.png");scanlineimg:setFilter("nearest", "nearest")
@@ -141,6 +160,7 @@ function love.load()
 	coinsound = love.audio.newSource("sounds/coin.ogg")
 	
 	loadlevels()
+	scale = 1
 	loadsave()
 	currentmap = unlockedlevels
 	
@@ -149,6 +169,25 @@ function love.load()
 	intro_load()
 	
 	skipupdate = true
+	 
+	love.graphics.setLineWidth(1/scale)
+	if scale ~= 1 then
+		changescale(scale)
+	end
+	
+	screenwidth = 1024
+	screenheight = 768
+end
+
+function changescale(s)
+	scale = s
+	if love.graphics.setMode then
+		love.graphics.setMode(1024*scale, 768*scale, false, true)
+	elseif love.window.setMode then
+		love.window.setMode(1024*scale, 768*scale, {fullscreen=false, vsync=true})
+	end
+	
+	love.graphics.setLineWidth(1/scale)
 end
 
 function love.update(dt)
@@ -166,12 +205,12 @@ function love.update(dt)
 	local b = currentbackground
 	for c = 1, 3 do
 		if b[c] > wantedbackground[c] then
-			b[c] = b[c] - dt*40
+			b[c] = b[c] - dt*600
 			if b[c] < wantedbackground[c] then
 				b[c] = wantedbackground[c]
 			end
 		elseif b[c] < wantedbackground[c] then
-			b[c] = b[c] + dt*40
+			b[c] = b[c] + dt*600
 			if b[c] > wantedbackground[c] then
 				b[c] = wantedbackground[c]
 			end
@@ -206,6 +245,7 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.scale(scale, scale)
 	if gamestate == "intro" then
 		intro_draw()
 	elseif gamestate == "game" then
@@ -233,7 +273,38 @@ function love.keypressed(key, unicode)
 	end
 end
 
+function mymousegetX()
+	return love.mouse.getX()*(1/scale)
+end
+
+function mymousegetY()
+	return love.mouse.getY()*(1/scale)
+end
+
+function mymousegetPosition()
+	return love.mouse.getX()*(1/scale), love.mouse.getY()*(1/scale)
+end
+
+function mygraphicssetScissor(x, y, w, h)
+	if x and y and w and h then
+		love.graphics.setScissor(x*scale, y*scale, w*scale, h*scale)
+	else
+		love.graphics.setScissor()
+	end
+end
+
+function mygraphicsgetScissor()
+	local x, y, w, h = love.graphics.getScissor()
+	if x and y and w and h then
+		return x*(1/scale), y*(1/scale), w*(1/scale), h*(1/scale)
+	else
+		return false
+	end
+end
+
 function love.mousepressed(x, y, button)
+	x = x * (1/scale)
+	y = y * (1/scale)
 	if gamestate == "game" then
 		game_mousepressed(x, y, button)
 	elseif gamestate == "menu" then
@@ -244,6 +315,8 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
+	x = x * (1/scale)
+	y = y * (1/scale)
 	if gamestate == "game" then
 		game_mousereleased(x, y, button)
 	end
@@ -463,6 +536,14 @@ function convertGRDtoSCR(cox, coy, coz) --CONVERTS GRID COORDINATES INTO SCREEN 
 	return x, y
 end
 
+function drawlinepolygon(...)
+	local points = {...}
+	for i = 1, #points-2, 2 do
+		love.graphics.line(points[i], points[i+1], points[i+2], points[i+3])
+	end
+	love.graphics.line(points[#points-1], points[#points], points[1], points[2])
+end
+
 function drawtile(cox, coy, coz, tile, xd, yd, zd)
 	local tilenum = tile.tilenum
 	if tilenum ~= 1 then
@@ -520,14 +601,14 @@ function drawbox(x, y, tile)
 	if tile.facevisible[5] then
 		if drawfaces then
 			local r, g, b, a = unpack(tile.facecolor[5])
-			lg_setColor(r, g, b, (a or 255)*fillfadecolor)
+			lg_setColor(r*shadowtop, g*shadowtop, b*shadowtop, (a or 255)*fillfadecolor)
 			lg_polygon("fill", point1[1], point1[2], point2[1], point2[2], point3[1], point3[2], point4[1], point4[2])
 		end
 		
 		if drawgrid then
 			local r, g, b, a = unpack(tile.gridcolor[1])
-			lg_setColor(r, g, b, (a or 255)*gridfadecolor)
-			lg_polygon("line", point1[1], point1[2], point2[1], point2[2], point3[1], point3[2], point4[1], point4[2])
+			lg_setColor(r*shadowtop, g*shadowtop, b*shadowtop, (a or 255)*gridfadecolor)
+			drawlinepolygon(point1[1], point1[2], point2[1], point2[2], point3[1], point3[2], point4[1], point4[2])
 		end
 	end
 	
@@ -536,7 +617,7 @@ function drawbox(x, y, tile)
 	local newpoint1, newpoint2, newpoint3, newpoint4, newpoint5, newpoint6
 	local side1, side2
 	
-	if rotation <= pi075 and rotation > pi025 then --SIDES 4 AND 1
+	if rotation < pi075 and rotation >= pi025 then --SIDES 4 AND 1
 		side1 = 1
 		side2 = 4
 		
@@ -549,7 +630,7 @@ function drawbox(x, y, tile)
 			newpoint5 = {newpoint2[1], newpoint2[2] + boxheightmodded}
 			newpoint6 = {newpoint3[1], newpoint3[2] + boxheightmodded}
 		end
-	elseif rotation <= pi025 or rotation > pi175 then --SIDES 1 AND 2
+	elseif rotation < pi025 or rotation >= pi175 then --SIDES 1 AND 2
 		side1 = 2
 		side2 = 1
 		
@@ -562,7 +643,7 @@ function drawbox(x, y, tile)
 			newpoint5 = {newpoint2[1], newpoint2[2] + boxheightmodded}
 			newpoint6 = {newpoint3[1], newpoint3[2] + boxheightmodded}
 		end	
-	elseif rotation <= pi175 and rotation > pi125 then --SIDES 2 AND 3
+	elseif rotation < pi175 and rotation >= pi125 then --SIDES 2 AND 3
 		side1 = 3
 		side2 = 2
 		
@@ -575,7 +656,7 @@ function drawbox(x, y, tile)
 			newpoint5 = {newpoint2[1], newpoint2[2] + boxheightmodded}
 			newpoint6 = {newpoint3[1], newpoint3[2] + boxheightmodded}
 		end
-	elseif rotation <= pi125 and rotation > pi075 then --SIDES 3 AND 4
+	elseif rotation < pi125 and rotation >= pi075 then --SIDES 3 AND 4
 		side1 = 4
 		side2 = 3
 		
@@ -583,7 +664,7 @@ function drawbox(x, y, tile)
 			newpoint1 = point1
 			newpoint2 = point4
 			newpoint3 = point3
-			
+			--Yarr I'm a pirate comment, gimme your booty
 			newpoint4 = {newpoint1[1], newpoint1[2] + boxheightmodded}
 			newpoint5 = {newpoint2[1], newpoint2[2] + boxheightmodded}
 			newpoint6 = {newpoint3[1], newpoint3[2] + boxheightmodded}
@@ -591,32 +672,44 @@ function drawbox(x, y, tile)
 	end
 	
 	--draw them sides
-	if tile.facevisible[side1] then
-		if drawfaces then
-			local r, g, b, a = unpack(tile.facecolor[side1])
-			lg_setColor(r, g, b, (a or 255)*fillfadecolor)
-			lg_polygon("fill", newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
-		end
-		
-		if drawgrid then
-			local r, g, b, a = unpack(tile.gridcolor[2])
-			lg_setColor(r, g, b, (a or 255)*gridfadecolor)
-			lg_polygon("line", newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
+	local function leftside()
+		if tile.facevisible[side2] then
+			if drawfaces then
+				local r, g, b, a = unpack(tile.facecolor[side2])
+				lg_setColor(r*shadow1, g*shadow1, b*shadow1, (a or 255)*fillfadecolor)
+				lg_polygon("fill", newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
+			end
+			
+			if drawgrid then
+				local r, g, b, a = unpack(tile.gridcolor[2])
+				lg_setColor(r*shadow1, g*shadow1, b*shadow1, (a or 255)*gridfadecolor)
+				drawlinepolygon(newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
+			end
 		end
 	end
 	
-	if tile.facevisible[side2] then
-		if drawfaces then
-			local r, g, b, a = unpack(tile.facecolor[side2])
-			lg_setColor(r, g, b, (a or 255)*fillfadecolor)
-			lg_polygon("fill", newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
+	local function rightside()
+		if tile.facevisible[side1] then
+			if drawfaces then
+				local r, g, b, a = unpack(tile.facecolor[side1])
+				lg_setColor(r*shadow2, g*shadow2, b*shadow2, (a or 255)*fillfadecolor)
+				lg_polygon("fill", newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
+			end
+			
+			if drawgrid then
+				local r, g, b, a = unpack(tile.gridcolor[2])
+				lg_setColor(r*shadow2, g*shadow2, b*shadow2, (a or 255)*gridfadecolor)
+				drawlinepolygon(newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
+			end
 		end
-		
-		if drawgrid then
-			local r, g, b, a = unpack(tile.gridcolor[2])
-			lg_setColor(r, g, b, (a or 255)*gridfadecolor)
-			lg_polygon("line", newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
-		end
+	end
+	
+	if shadow1 > shadow2 then
+		rightside()
+		leftside()
+	else
+		leftside()
+		rightside()
 	end
 end
 
@@ -634,6 +727,17 @@ function calculatevars()
 	relpoint2 = {math.cos(rotation+pi05)*halfboxwidth, math.sin(rotation+pi05)*halfboxwidth*pitch}
 	relpoint3 = {math.cos(rotation+pi1)*halfboxwidth, math.sin(rotation+pi1)*halfboxwidth*pitch}
 	relpoint4 = {math.cos(rotation+pi15)*halfboxwidth, math.sin(rotation+pi15)*halfboxwidth*pitch}
+	
+	
+	shadowtop = 1-boxheightmod^2*shadowtopfactor
+	shadow1 = (1-math.abs((math.pi/2-math.mod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
+	shadow2 = 1-shadow1
+	
+	shadow1 = shadow1*shadowfactor+(1-shadowfactor)
+	shadow2 = shadow2*shadowfactor+(1-shadowfactor)
+	
+	shadow1 = 1-(1-shadow1)^2
+	shadow2 = 1-(1-shadow2)^2
 end
 
 function round(num, idp)
@@ -676,6 +780,8 @@ function loadsave()
 			else
 				soundenabled = false
 			end
+		elseif s[1] == "scale" then
+			scale = tonumber(s[2])
 		end
 		
 		if filetable[currentmap].hightime then
@@ -709,6 +815,7 @@ function savesave()
 			end
 		end
 	end
+	s = s .. "scale=" .. scale .. ";"
 	if soundenabled then
 		s = s .. "sound=true;"
 	else
@@ -738,7 +845,7 @@ function drawblock(x, y, width, height, fillcolor, outlinecolor, r)
 		rotatedsquare("line", x+width/2+.5, y+height/2+.5, r or 0, width)
 	else --not rotated
 		love.graphics.setColor(unpack(fillcolor))
-		love.graphics.rectangle("fill", x+.5, y+.5, width-1, height-1)
+		love.graphics.rectangle("fill", x+1, y+1, width-1, height-1)
 		love.graphics.setColor(unpack(outlinecolor))
 		love.graphics.rectangle("line", x+.5, y+.5, width, height)
 	end

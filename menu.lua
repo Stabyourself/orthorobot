@@ -28,8 +28,6 @@ function menu_load(x, y)
 	rotcenterY = menurotcenterY
 	rotcenterZ = menurotcenterZ
 	
-	rainbowi = 0
-	
 	calculatevars()
 	
 	creditstext = {	"'Ortho Robot'",
@@ -67,10 +65,19 @@ function menu_load(x, y)
 		table.insert(menubuttons, menubutton:new(screenwidth/2-100, 1100, "Yes", button_yes))
 		table.insert(menubuttons, menubutton:new(screenwidth/2+100, 1100, "No", button_no))
 		table.insert(menubuttons, menubutton:new(screenwidth/2+screenwidth, 650, "< Okay I get it", button_creditsback))
-		table.insert(menubuttons, menubutton:new(-screenwidth/2, 650, "Let's do this >", button_creditsback))
+		table.insert(menubuttons, menubutton:new(-screenwidth/2, 685, "Let's do this >", button_creditsback))
 		table.insert(menubuttons, menubutton:new(screenwidth-141, -45, "Next >", button_nextpage))
 		table.insert(menubuttons, menubutton:new(198, -45, "< Previous", button_prevpage))
 		table.insert(menubuttons, menubutton:new(screenwidth/2+screenwidth, 0, "< Awesome", button_winback))
+		
+		if scale == 1 then
+			sizebutton = pausebutton:new(0, 0, "Help, this game doesn't fit on my screen!", scalebutton)
+		else
+			sizebutton = pausebutton:new(0, 0, "Nevermind, the game does fit on my screen.", scalebutton)
+		end
+		
+		sizebutton.width = 680
+		sizebutton.active = true
 	else
 		menubuttons[5].active = true
 	end
@@ -138,6 +145,16 @@ function menu_load(x, y)
 	skipupdate = true
 end
 
+function scalebutton()
+	if scale == 1 then
+		changescale(0.75)
+		sizebutton:changetext("Nevermind, the game does fit on my screen.")
+	else
+		changescale(1)
+		sizebutton:changetext("Help, this game doesn't fit on my screen!")
+	end
+end
+
 function menu_update(dt)	
 	if fadetimer ~= fadetimert then
 		if fadetimert > fadetimer then
@@ -161,7 +178,7 @@ function menu_update(dt)
 					return
 				elseif fadegoal == "quit" then
 					savesave()
-					love.event.push("q")
+					love.event.quit()
 					return
 				end
 			else
@@ -248,6 +265,9 @@ function menu_update(dt)
 		v:update(dt)
 	end
 	pausebuttons["menutogglesound"]:update(dt)
+	sizebutton.x = menuoffsetx-screenwidth/2
+	sizebutton.y = menuoffset+615
+	sizebutton:update(dt)
 end
 
 function menu_draw()
@@ -411,17 +431,18 @@ function menu_draw()
 	love.graphics.translate(-menuoffsetx, -menuoffset)
 	
 	pausebuttons["menutogglesound"]:draw()
+	sizebutton:draw()
 	
 	love.graphics.setFont(winwindowfont)
 	love.graphics.setColor(255, 255, 255, 100*fadecolor)
-	love.graphics.print("2011 Stabyourself.net", screenwidth/2-117, 730)
+	love.graphics.print("2011 Stabyourself.net (v1.1)", screenwidth/2-140, 730)
 	
 	love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
 	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
 end
 
 function loadlevels()
-	filetable = love.filesystem.enumerate( "maps/" )
+	filetable = love.filesystem.getDirectoryItems( "maps/" )
 	for i = 1, #filetable do
 		local path = filetable[i]
 		filetable[i] = {}
@@ -566,14 +587,14 @@ function newBox(first)
 		width = math.random(30, 100)
 		height = math.random(10, 20)
 		if first then
-			x = math.random(-screenwidth-width, screenwidth*2)
+			x = math.random(-screenwidth*3-width, -width)
 		else
 			x = -screenwidth-width
 		end
 		y = math.random(-screenheight, screenheight*2)
 		if rand/2 == 2 then
 			if first then
-				x = math.random(-screenwidth, screenwidth*2)
+				x = math.random(screenwidth, screenwidth*4)
 			else
 				x = screenwidth*2+width
 			end
@@ -583,14 +604,14 @@ function newBox(first)
 		width = math.random(10, 20)
 		height = math.random(30, 100)
 		if first then
-			y = math.random(-screenheight, screenheight*2)
+			y = math.random(-screenheight*3-height, -height)
 		else
 			y = -screenheight - height
 		end
 		x = math.random(-screenwidth, screenwidth*2)
 		if rand/2 == 1.5 then
 			if first then
-				y = math.random(-screenheight, screenheight*2)
+				y = math.random(screenheight, screenheight*4)
 			else
 				y = screenheight*2+height
 			end
@@ -619,6 +640,7 @@ function menu_mousepressed(x, y, button)
 		end
 	end
 	pausebuttons["menutogglesound"]:mousepressed(x + menuoffsetx, y + menuoffset, button)
+	sizebutton:mousepressed(x + menuoffsetx, y + menuoffset, button)
 end
 
 function menu_togglesound()

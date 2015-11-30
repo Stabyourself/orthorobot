@@ -176,7 +176,7 @@ function game_update(dt)
 			fadetimer4t = 0.2
 			fadetimer4 = fadetimer3 - fadetimer3t
 			if rotatedrag then
-				rotatedragX, rotatedragY = love.mouse.getPosition()
+				rotatedragX, rotatedragY = mymousegetPosition()
 			end
 		end
 	end
@@ -237,7 +237,7 @@ function game_update(dt)
 	end
 	
 	if movedrag then
-		local mousex, mousey = love.mouse.getPosition()
+		local mousex, mousey = mymousegetPosition()
 		local xdist = mousex - movedragX
 		local ydist = mousey - movedragY
 		
@@ -262,7 +262,7 @@ function game_update(dt)
 		
 		
 	elseif rotatedrag and controlsenabled then
-		local mousex, mousey = love.mouse.getPosition()
+		local mousex, mousey = mymousegetPosition()
 		local xdist = mousex - rotatedragX
 		local ydist = mousey - rotatedragY
 		
@@ -412,7 +412,7 @@ function game_draw()
 	if filetable[currentmap].text then
 		alpha = fadecolor
 		width = 99 + (625-(1-((fadetimer3)/1.5))^2 * 625)
-		love.graphics.setScissor(149, 0, width+1, 101)
+		mygraphicssetScissor(149, 0, width+1, 101)
 		love.graphics.setColor(0, 0, 0, 200*alpha)
 		love.graphics.rectangle("fill", 150, 1, width, 100)
 		love.graphics.setColor(255, 255, 255, 100*alpha)
@@ -433,7 +433,7 @@ function game_draw()
 		
 		love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255*alpha)
 		love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 	end
 	
 	local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
@@ -466,7 +466,7 @@ function game_draw()
 	
 	if pausemenutimer > 0 then
 		local height = (100-(1-((pausemenutimer)/1))^2 * 100)
-		love.graphics.setScissor(screenwidth/2-130-1, screenheight/2-height-1, 260+1, height*2+1)
+		mygraphicssetScissor(screenwidth/2-130-1, screenheight/2-height-1, 260+1, height*2+1)
 		love.graphics.setColor(0, 0, 0, 200*fadecolor)
 		love.graphics.rectangle("fill", screenwidth/2-130, screenheight/2-height, 259, height*2)
 		love.graphics.setColor(255, 255, 255, 255*fadecolor)
@@ -483,13 +483,13 @@ function game_draw()
 		love.graphics.setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-130, screenheight/2-height, 260, height*2)
 		
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 	end
 	
 	if won then
 		
 		local height = (200-(1-((winwindowtimer)/1))^2 * 200)
-		love.graphics.setScissor(0, screenheight/2-height-1, screenwidth, height*2+1)
+		mygraphicssetScissor(0, screenheight/2-height-1, screenwidth, height*2+1)
 		
 		if newstar then
 			love.graphics.setColor(255, 255, 255, 150*fadecolor)
@@ -562,7 +562,7 @@ function game_draw()
 		love.graphics.setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-110, screenheight/2-height, 220, height*2)
 		
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 	end		
 end
 
@@ -581,13 +581,13 @@ function updateperspective(persp)
 		if pitch == 1 then
 			perspective = "up"
 		else
-			if rotation == pi025 then
+			if rotation == pi025 + 0.000001 then
 				perspective = "back"
-			elseif rotation == pi075 then
+			elseif rotation == pi075 + 0.000001 then
 				perspective = "left"
-			elseif rotation == pi125 then
+			elseif rotation == pi125 + 0.000001 then
 				perspective = "front"
-			elseif rotation == pi175 then
+			elseif rotation == pi175 + 0.000001 then
 				perspective = "right"
 			end
 		end
@@ -597,7 +597,6 @@ function updateperspective(persp)
 		if previouspersp ~= "none" then
 			if not won then
 				wantedbackground = {70, 0, 0}
-				currentbackground = {70, 0, 0}
 			end
 			if map[pl.x][pl.y][pl.z].tilenum == 1 then --Player is flying lol /noclip
 				if previouspersp == "front" or previouspersp == "back" then
@@ -656,7 +655,6 @@ function updateperspective(persp)
 		end
 		
 		wantedbackground = {0, 70, 0}
-		currentbackground = {0, 70, 0}
 		local playercovered = false
 		
 		if perspective == "front" then
@@ -974,7 +972,13 @@ end
 
 function win()
 	won = true
-	scoretime = round(scoretime, 2)
+	
+	if scoretime < 100 then
+		scoretime = round(scoretime, 2)
+	else
+		scoretime = round(scoretime)
+	end
+	
 	texttimer = texttime
 	
 	if scoretime <= goaltime then
@@ -1123,6 +1127,7 @@ function pause_tomenu()
 	pausebuttons["togglesound"].active = false
 	pausebuttons["tomenu"].active = false
 	playsound(backsound)
+	wantedbackground = {0, 0, 0}
 end
 
 function game_keypressed(key)
@@ -1153,7 +1158,12 @@ function game_keypressed(key)
 end
 
 function game_mousepressed(x, y, button)
-	if button == "r" or button == "l" and not gamepaused then
+	for i, v in pairs(pausebuttons) do
+		v:mousepressed(x, y, button)
+	end
+	
+	print(fadegoal)
+	if button == "r" or button == "l" and (not gamepaused and fadegoal ~= "menu") then
 		updateperspective("none")
 		rotatedrag = true
 		rotatedragX = x
@@ -1161,16 +1171,11 @@ function game_mousepressed(x, y, button)
 		smoothtarget = nil
 		pitchtarget = nil
 		wantedbackground = {0, 0, 0}
-		currentbackground = {0, 0, 0}
-	end
-	
-	for i, v in pairs(pausebuttons) do
-		v:mousepressed(x, y, button)
 	end
 end
 
 function game_mousereleased(x, y, button)
-	if (button == "r" or button == "l") and love.mouse.isDown("l") == false and love.mouse.isDown("r") == false then
+	if (button == "r" or button == "l") and love.mouse.isDown("l") == false and love.mouse.isDown("r") == false and fadegoal ~= "menu" then
 		rotatedrag = false
 		if won == false then
 		--check if current pitch is good
@@ -1192,13 +1197,12 @@ function game_mousereleased(x, y, button)
 						end
 						
 						if checkperspective(persp) == false then
-							smoothtarget = math.pi/2*i - math.pi/4
+							smoothtarget = math.pi/2*i - math.pi/4 + 0.000001
 							pitchtarget = 0
 							smoothfound = true
 							break
 						else
 							wantedbackground = {70, 0, 0}
-							currentbackground = {70, 0, 0}
 							smoothtarget = nil
 							smoothfound = true
 						end
@@ -1207,7 +1211,6 @@ function game_mousereleased(x, y, button)
 			
 				if smoothfound == false then
 					wantedbackground = {0, 0, 0}
-					currentbackground = {0, 0, 0}
 					smoothtarget = nil
 				end
 			elseif pitch > 1-clipP then
@@ -1215,12 +1218,10 @@ function game_mousereleased(x, y, button)
 					pitchtarget = 1
 				else
 					wantedbackground = {70, 0, 0}
-					currentbackground = {70, 0, 0}
 					pitchtarget = nil
 				end
 			else
 				wantedbackground = {0, 0, 0}
-				currentbackground = {0, 0, 0}
 				pitchtarget = nil
 			end
 		end

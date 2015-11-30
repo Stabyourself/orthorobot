@@ -13,12 +13,12 @@ end
 function backgroundblock:update(dt)
 	if self.dir == "hor" then
 		self.x = self.x + self.speed*dt
-		if self.x < -screenwidth-self.width or self.x > screenwidth*2+self.width then
+		if (self.speed < 0 and self.x < -screenwidth-self.width) or (self.speed > 0 and self.x > screenwidth*2+self.width) then
 			self.x, self.y, self.width, self.height, self.dir, self.speed = unpack(newBox())
 		end
 	else
 		self.y = self.y + self.speed*dt
-		if self.y < -screenheight-self.height or self.y > screenheight*2+self.height then
+		if (self.speed < 0 and self.y < -screenheight-self.height) or (self.speed > 0 and self.y > screenheight*2+self.height) then
 			self.x, self.y, self.width, self.height, self.dir, self.speed = unpack(newBox())
 		end
 	end

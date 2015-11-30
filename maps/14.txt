@@ -2,5 +2,5 @@ height=9
 name=Square
 warps=13
 time=14
-steps=20
+steps=19
 coins=7

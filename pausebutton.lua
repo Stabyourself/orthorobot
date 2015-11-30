@@ -13,8 +13,13 @@ function pausebutton:init(x, y, text, func)
 	self.width = 218
 end
 
+function pausebutton:changetext(t)
+	self.text = t
+	self.textwidth = levelselectfont:getWidth(self.text)
+end
+
 function pausebutton:update(dt)
-	local x, y = love.mouse.getPosition()
+	local x, y = mymousegetPosition()
 	y = y
 	x = x
 	if self:gethighlight(x, y) then
@@ -38,34 +43,34 @@ function pausebutton:draw()
 	g = g + (tg-g)*(self.value*.7+.3)
 	b = b + (tb-b)*(self.value*.7+.3)
 	
-	local scissorx, scissory, scissorwidth, scissorheight = love.graphics.getScissor( )
+	local scissorx, scissory, scissorwidth, scissorheight = mygraphicsgetScissor( )
 	
 	love.graphics.setFont(levelselectfont)
-	love.graphics.setScissor(self.x-self.width/2+self.width/2*self.value, scissory or self.y, round(self.width-self.width*self.value), scissorheight or self.height)
+	mygraphicssetScissor(self.x-self.width/2+self.width/2*self.value, scissory or self.y, round(self.width-self.width*self.value), scissorheight or self.height)
 	love.graphics.setColor(r, g, b, 100*fadecolor)
 	love.graphics.rectangle("fill", self.x-self.width/2, self.y, self.width, self.height)
 	love.graphics.setColor(0, 0, 0, 255*fadecolor)
 	if self.text then
 		love.graphics.print(self.text, self.x - self.textwidth/2+1, self.y-7)
 	end
-	love.graphics.setScissor()
+	mygraphicssetScissor()
 	
 	love.graphics.setColor(r, g, b, 255*fadecolor)
 	
-	love.graphics.setScissor(round(self.x-self.width/2), scissory or self.y, round(self.width/2*self.value), scissorheight or self.height)
+	mygraphicssetScissor(round(self.x-self.width/2), scissory or self.y, round(self.width/2*self.value), scissorheight or self.height)
 	if self.text then
 		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y-7)
 	end
 	
-	love.graphics.setScissor(round(self.x+self.width/2-(self.width/2*self.value)), scissory or self.y, round(self.width/2), scissorheight or self.height)
+	mygraphicssetScissor(round(self.x+self.width/2-(self.width/2*self.value)), scissory or self.y, round(self.width/2), scissorheight or self.height)
 	if self.text then
 		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y-7)
 	end
 	
 	if scissorx then
-		love.graphics.setScissor(scissorx, scissory, scissorwidth, scissorheight)
+		mygraphicssetScissor(scissorx, scissory, scissorwidth, scissorheight)
 	else
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 	end
 end
 

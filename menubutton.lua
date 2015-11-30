@@ -17,7 +17,7 @@ function menubutton:init(x, y, text, func)
 end
 
 function menubutton:update(dt)
-	local x, y = love.mouse.getPosition()
+	local x, y = mymousegetPosition()
 	y = y - menuoffset
 	x = x - menuoffsetx
 	if self:gethighlight(x, y) then
@@ -44,17 +44,17 @@ function menubutton:draw()
 	
 	love.graphics.setFont(menufont)
 	
-	love.graphics.setScissor(self.x-self.width/2-self.xmargin+menuoffsetx, self.y-self.height/2+menuoffset, (self.width+self.xmargin*2)*self.value, self.height)
+	mygraphicssetScissor(self.x-self.width/2-self.xmargin+menuoffsetx, self.y-self.height/2+menuoffset, (self.width+self.xmargin*2)*self.value, self.height)
 	love.graphics.setColor(r, g, b, fadecolor*255)
 	love.graphics.rectangle("fill", self.x-self.width/2-self.xmargin, self.y-self.height/2, (self.width+self.xmargin*2)*self.value, self.height)
 	love.graphics.setColor(0, 0, 0, fadecolor*255)
 	love.graphics.print(self.text, self.x-self.width/2, self.y-self.height/2+self.textyplus)
 	
-	love.graphics.setScissor(self.x-self.width/2-self.xmargin+(self.width+self.xmargin*2)*self.value+menuoffsetx, self.y-self.height/2+menuoffset, self.width+self.xmargin*2, self.height)
+	mygraphicssetScissor(self.x-self.width/2-self.xmargin+(self.width+self.xmargin*2)*self.value+menuoffsetx, self.y-self.height/2+menuoffset, self.width+self.xmargin*2, self.height)
 	love.graphics.setColor(r, g, b, fadecolor*255)
 	love.graphics.print(self.text, self.x-self.width/2, self.y-self.height/2+self.textyplus)
 	
-	love.graphics.setScissor()
+	mygraphicssetScissor()
 end
 
 function menubutton:mousepressed(x, y, button)

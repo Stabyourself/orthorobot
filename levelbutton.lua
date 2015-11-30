@@ -33,7 +33,7 @@ function levelbutton:update(dt)
 	end
 	
 	if self.unlocked then
-		local x, y = love.mouse.getPosition()
+		local x, y = mymousegetPosition()
 		y = y - menuoffset
 		x = x - menuoffsetx
 		if self:gethighlight(x, y) then
@@ -75,28 +75,28 @@ function levelbutton:draw()
 		love.graphics.rectangle("fill", self.x-self.width/2, self.y+self.height-(self.height-30)*self.value, self.width, (self.height-30)*self.value)
 		
 		love.graphics.setFont(levelselectfont)
-		love.graphics.setScissor(self.x-self.width/2+menuoffsetx+self.width/2*self.value, self.y+menuoffset, round(self.width-self.width*self.value), self.height*0.6)
+		mygraphicssetScissor(self.x-self.width/2+menuoffsetx+self.width/2*self.value, self.y+menuoffset, round(self.width-self.width*self.value), self.height*0.6)
 		love.graphics.setColor(r, g, b, 100*fadecolor)
 		love.graphics.rectangle("fill", self.x-self.width/2, self.y, self.width, 30)
 		love.graphics.setColor(0, 0, 0, 255*fadecolor)
 		if self.text then
 			love.graphics.print(self.text, self.x - self.textwidth/2+6, self.y-2)
 		end
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 		
 		love.graphics.setColor(r, g, b, 255*fadecolor)
 		
-		love.graphics.setScissor(round(self.x-self.width/2+menuoffsetx), self.y+menuoffset, round(self.width/2*self.value), self.height*0.6)
+		mygraphicssetScissor(round(self.x-self.width/2+menuoffsetx), self.y+menuoffset, round(self.width/2*self.value), self.height*0.6)
 		if self.text then
 			love.graphics.print(self.text, round(self.x - self.textwidth/2+6), self.y-2)
 		end
 		
-		love.graphics.setScissor(round(self.x+menuoffsetx+self.width/2-(self.width/2*self.value)), self.y+menuoffset, round(self.width/2), self.height*0.6)
+		mygraphicssetScissor(round(self.x+menuoffsetx+self.width/2-(self.width/2*self.value)), self.y+menuoffset, round(self.width/2), self.height*0.6)
 		if self.text then
 			love.graphics.print(self.text, round(self.x - self.textwidth/2+6), self.y-2)
 		end
 		
-		love.graphics.setScissor()
+		mygraphicssetScissor()
 		
 		
 		love.graphics.setFont(winwindowfont)
@@ -163,7 +163,7 @@ function levelbutton:draw()
 		
 		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5+self.value*0.5, 1)))
 		love.graphics.setColor(r, g, b, 255*fadecolor)
-		love.graphics.rectangle("line", round(self.x-self.width/2), round(self.y), self.width+2, self.height+2)
+		love.graphics.rectangle("line", round(self.x-self.width/2)-1, round(self.y)-1, self.width+2, self.height+2)
 	else		
 		local r, g, b = 200, 200, 200
 		
@@ -179,7 +179,7 @@ function levelbutton:draw()
 		love.graphics.draw(coinsbackimg, self.x+self.width/2, self.y)
 		
 		love.graphics.setColor(r, g, b, 100*fadecolor)
-		love.graphics.rectangle("line", round(self.x-self.width/2), round(self.y), self.width+2, self.height+2)
+		love.graphics.rectangle("line", round(self.x-self.width/2)-1, round(self.y)-1, self.width+2, self.height+2)
 	end
 end
 
