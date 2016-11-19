@@ -184,7 +184,7 @@ function levelbutton:draw()
 end
 
 function levelbutton:mousepressed(x, y, button)
-	if self.unlocked and self.active and button == "l" then
+	if self.unlocked and self.active and button == lbutton then
 		if self:gethighlight(x, y) then
 			for i, v in pairs(levelbuttons) do
 				v.active = false

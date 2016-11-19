@@ -58,7 +58,7 @@ function menubutton:draw()
 end
 
 function menubutton:mousepressed(x, y, button)
-	if self.active and button == "l" then
+	if self.active and button == lbutton then
 		if self:gethighlight(x, y) then
 			self:func()
 			return true

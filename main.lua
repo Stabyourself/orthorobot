@@ -27,7 +27,15 @@
 	0. You just DO WHAT THE FUCK YOU WANT TO.
 ]]
 
---0.9.0 stuff
+--Version compatibility stuff
+major, minor, revision, codename = love.getVersion()
+if major == 0 and minor <= 9 then
+	lbutton = "l"
+	rbutton = "r"
+else
+	lbutton = 1
+	rbutton = 2
+end
 math.mod = math.fmod
 if not love.graphics.drawq then
 	love.graphics.drawq = love.graphics.draw

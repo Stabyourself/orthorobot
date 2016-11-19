@@ -1163,7 +1163,7 @@ function game_mousepressed(x, y, button)
 	end
 	
 	print(fadegoal)
-	if button == "r" or button == "l" and (not gamepaused and fadegoal ~= "menu") then
+	if button == rbutton or button == lbutton and (not gamepaused and fadegoal ~= "menu") then
 		updateperspective("none")
 		rotatedrag = true
 		rotatedragX = x
@@ -1175,7 +1175,7 @@ function game_mousepressed(x, y, button)
 end
 
 function game_mousereleased(x, y, button)
-	if (button == "r" or button == "l") and love.mouse.isDown("l") == false and love.mouse.isDown("r") == false and fadegoal ~= "menu" then
+	if (button == rbutton or button == lbutton) and love.mouse.isDown(lbutton) == false and love.mouse.isDown(rbutton) == false and fadegoal ~= "menu" then
 		rotatedrag = false
 		if won == false then
 		--check if current pitch is good

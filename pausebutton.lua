@@ -76,7 +76,7 @@ end
 
 function pausebutton:mousepressed(x, y, button)
 	if self.active then
-		if button == "l" then
+		if button == lbutton then
 			if self:gethighlight(x, y) then
 				self:func()
 			end
