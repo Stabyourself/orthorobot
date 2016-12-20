@@ -435,7 +435,7 @@ function menu_draw()
 	
 	love.graphics.setFont(winwindowfont)
 	love.graphics.setColor(255, 255, 255, 100*fadecolor)
-	love.graphics.print("2011 Stabyourself.net (v1.2)", screenwidth/2-140, 730)
+	love.graphics.print("2011 Stabyourself.net (v1.1.1)", screenwidth/2-140, 730)
 	
 	love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
 	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
