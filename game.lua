@@ -341,8 +341,8 @@ end
 function game_draw()
 	local lmap = map
 	
-	love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
-	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
+	love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 	
 	if fadetimert == 1 then
 		gridfadecolor = fadecolor
@@ -396,14 +396,14 @@ function game_draw()
 	--always draw player in topdown
 	if perspective == "up" then
 		local x, y = convertGRDtoSCR(pl.drawx, pl.drawy, pl.drawz)
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		if won == false then
-			love.graphics.drawq(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-			love.graphics.setColor(255, 255, 255, 255*coinglowa)
+			love.graphics.draw(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+			lg_setColor(255, 255, 255, 255*coinglowa)
 			love.graphics.draw(coinglowimg, round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale/4, playerscale/4, 29, 89)
 		else
-			love.graphics.drawq(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-			love.graphics.setColor(0, 255, 0, 255*fadecolor)
+			love.graphics.draw(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+			lg_setColor(0, 255, 0, 255*fadecolor)
 			love.graphics.rectangle("fill", round(x)-2*playerscale, round(y+halfboxwidth*pitch*0.6)-16*playerscale-winwindowtimer/1*3*playerscale, 4*playerscale, winwindowtimer/1*3*playerscale)
 		end
 	end
@@ -413,31 +413,31 @@ function game_draw()
 		alpha = fadecolor
 		width = 99 + (625-(1-((fadetimer3)/1.5))^2 * 625)
 		mygraphicssetScissor(149, 0, width+1, 101)
-		love.graphics.setColor(0, 0, 0, 200*alpha)
+		lg_setColor(0, 0, 0, 200*alpha)
 		love.graphics.rectangle("fill", 150, 1, width, 100)
-		love.graphics.setColor(255, 255, 255, 100*alpha)
+		lg_setColor(255, 255, 255, 100*alpha)
 		love.graphics.rectangle("fill", 159, 10, 80, 81)
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
-		love.graphics.setColor(r, g, b, 200*alpha)
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
+		lg_setColor(r, g, b, 200*alpha)
 		love.graphics.rectangle("line", 150, 1, width, 100)
 		love.graphics.draw(textavatarimg, 159, 11)
 		
 		love.graphics.setFont(winwindowfont)
-		love.graphics.setColor(190, 206, 248, alpha*255)
+		lg_setColor(190, 206, 248, alpha*255)
 		local s = string.sub(filetable[currentmap].text, 1, math.max(0, string.len(filetable[currentmap].text)*(texttimer/texttime)-1))
-		if math.mod(rainbowi, 0.1) > 0.033 then
+		if math.fmod(rainbowi, 0.1) > 0.033 then
 			s = s .. "_"
 		end
 		
 		love.graphics.printf( s, 260, 10, 604, "left" )
 		
-		love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255*alpha)
-		love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+		lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255*alpha)
+		love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 		mygraphicssetScissor()
 	end
 	
-	local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
-	love.graphics.setColor(r, g, b, 200*fadecolor)
+	local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
+	lg_setColor(r, g, b, 200*fadecolor)
 	
 	if fadetimer >= 0.5 and fadetimer2 < 0.5 then
 		love.graphics.draw(number3img, 436.5, 296-(fadetimer+fadetimer2-1)*2*(screenheight/2+175))
@@ -446,14 +446,14 @@ function game_draw()
 	elseif fadetimer3 >= 0.5 and fadetimer3 < 1.5 then
 		love.graphics.draw(number1img, 474, 296-(fadetimer3-1)*2*(screenheight/2+175))
 	elseif fadetimer3 == 1.5 and fadetimer4 < 0.1 then
-		love.graphics.setColor(r, g, b, 200*fadecolor)
+		lg_setColor(r, g, b, 200*fadecolor)
 		love.graphics.draw(gosmallimg, 311.5, 296)
 	elseif fadetimer4 >= 0.1 and fadetimer4 < 0.2 then
-		love.graphics.setColor(r, g, b, 200*fadecolor)
+		lg_setColor(r, g, b, 200*fadecolor)
 		love.graphics.draw(gobigimg, 111.5, 208.5)
 	end
 	
-	love.graphics.setColor(255, 255, 255, 200*fadecolor)
+	lg_setColor(255, 255, 255, 200*fadecolor)
 	love.graphics.setFont(winwindowfont)
 	love.graphics.draw(clockimg, 7, 7, 0, 2, 2)
 	love.graphics.draw(stepsimg, 7, 32, 0, 2, 2)
@@ -467,9 +467,9 @@ function game_draw()
 	if pausemenutimer > 0 then
 		local height = (100-(1-((pausemenutimer)/1))^2 * 100)
 		mygraphicssetScissor(screenwidth/2-130-1, screenheight/2-height-1, 260+1, height*2+1)
-		love.graphics.setColor(0, 0, 0, 200*fadecolor)
+		lg_setColor(0, 0, 0, 200*fadecolor)
 		love.graphics.rectangle("fill", screenwidth/2-130, screenheight/2-height, 259, height*2)
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		
 		love.graphics.setFont(winwindowtitlefont, 20)
 		love.graphics.print("Game Paused", screenwidth/2-111, screenheight/2-80)
@@ -479,8 +479,8 @@ function game_draw()
 		pausebuttons["togglesound"]:draw()
 		pausebuttons["tomenu"]:draw()
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
-		love.graphics.setColor(r, g, b, 255*fadecolor)
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
+		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-130, screenheight/2-height, 260, height*2)
 		
 		mygraphicssetScissor()
@@ -492,13 +492,13 @@ function game_draw()
 		mygraphicssetScissor(0, screenheight/2-height-1, screenwidth, height*2+1)
 		
 		if newstar then
-			love.graphics.setColor(255, 255, 255, 150*fadecolor)
+			lg_setColor(255, 255, 255, 150*fadecolor)
 			love.graphics.draw(yaywonimg, screenwidth/2-210, screenheight/2-200)
 		end
 		
-		love.graphics.setColor(0, 0, 0, 200*fadecolor)
+		lg_setColor(0, 0, 0, 200*fadecolor)
 		love.graphics.rectangle("fill", screenwidth/2-110, screenheight/2-height, 219, height*2)
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		
 		love.graphics.setFont(winwindowtitlefont, 20)
 		love.graphics.print("Level Done!", screenwidth/2-91, screenheight/2-200)
@@ -524,27 +524,27 @@ function game_draw()
 		love.graphics.print(bestwarps or "-", screenwidth/2+30, screenheight/2+72)
 		
 		if timebeaten then
-			love.graphics.setColor(0, 255, 0, 255*fadecolor)
+			lg_setColor(0, 255, 0, 255*fadecolor)
 		else
-			love.graphics.setColor(255, 0, 0, 255*fadecolor)
+			lg_setColor(255, 0, 0, 255*fadecolor)
 		end
 		love.graphics.print(scoretime, screenwidth/2+30, screenheight/2-145)
 		
 		if stepsbeaten then
-			love.graphics.setColor(0, 255, 0, 255*fadecolor)
+			lg_setColor(0, 255, 0, 255*fadecolor)
 		else
-			love.graphics.setColor(255, 0, 0, 255*fadecolor)
+			lg_setColor(255, 0, 0, 255*fadecolor)
 		end
 		love.graphics.print(scoresteps, screenwidth/2+30, screenheight/2-45)
 		
 		if warpsbeaten then
-			love.graphics.setColor(0, 255, 0, 255*fadecolor)
+			lg_setColor(0, 255, 0, 255*fadecolor)
 		else
-			love.graphics.setColor(255, 0, 0, 255*fadecolor)
+			lg_setColor(255, 0, 0, 255*fadecolor)
 		end
 		love.graphics.print(scorewarps, screenwidth/2+30, screenheight/2+55)
 		
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-111)
 		love.graphics.print(goaltime, screenwidth/2+30, screenheight/2-111)
 		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-11)
@@ -558,8 +558,8 @@ function game_draw()
 		pausebuttons["retry"]:draw()
 		pausebuttons["return"]:draw()
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
-		love.graphics.setColor(r, g, b, 255*fadecolor)
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
+		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-110, screenheight/2-height, 220, height*2)
 		
 		mygraphicssetScissor()

@@ -37,7 +37,7 @@ end
 
 function pausebutton:draw()
 	local r, g, b = 190, 206, 248
-	local tr, tg, tb = unpack(getrainbowcolor(math.mod(rainbowi+.5+self.value*0.5, 1)))
+	local tr, tg, tb = unpack(getrainbowcolor(math.fmod(rainbowi+.5+self.value*0.5, 1)))
 	
 	r = r + (tr-r)*(self.value*.7+.3)
 	g = g + (tg-g)*(self.value*.7+.3)
@@ -47,15 +47,15 @@ function pausebutton:draw()
 	
 	love.graphics.setFont(levelselectfont)
 	mygraphicssetScissor(self.x-self.width/2+self.width/2*self.value, scissory or self.y, round(self.width-self.width*self.value), scissorheight or self.height)
-	love.graphics.setColor(r, g, b, 100*fadecolor)
+	lg_setColor(r, g, b, 100*fadecolor)
 	love.graphics.rectangle("fill", self.x-self.width/2, self.y, self.width, self.height)
-	love.graphics.setColor(0, 0, 0, 255*fadecolor)
+	lg_setColor(0, 0, 0, 255*fadecolor)
 	if self.text then
 		love.graphics.print(self.text, self.x - self.textwidth/2+1, self.y-7)
 	end
 	mygraphicssetScissor()
 	
-	love.graphics.setColor(r, g, b, 255*fadecolor)
+	lg_setColor(r, g, b, 255*fadecolor)
 	
 	mygraphicssetScissor(round(self.x-self.width/2), scissory or self.y, round(self.width/2*self.value), scissorheight or self.height)
 	if self.text then

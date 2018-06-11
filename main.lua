@@ -10,22 +10,18 @@
 --Other credits
 --yay.png (star) by http://www.psdgraphics.com/
 
---Version compatibility stuff
-major, minor, revision, codename = love.getVersion()
-if major == 0 and minor <= 9 then
-	lbutton = "l"
-	rbutton = "r"
-else
-	lbutton = 1
-	rbutton = 2
-end
-math.mod = math.fmod
-if not love.graphics.drawq then
-	love.graphics.drawq = love.graphics.draw
+lbutton = 1
+rbutton = 2
+
+--TODO: change color code to use 0-1 instead of 0-255
+function lg_setColor(r, g, b, a)
+	if a == nil then
+		a = 255
+	end
+	love.graphics.setColor(r/255, g/255, b/255, a/255)
 end
 
 local lg_polygon = love.graphics.polygon
-local lg_setColor = love.graphics.setColor
 
 function love.load()
 	require "intro"
@@ -138,17 +134,17 @@ function love.load()
 	ssssimg = love.graphics.newImage("ssss.png");ssssimg:setFilter("nearest", "nearest")
 	accentimg = love.graphics.newImage("accent.png");accentimg:setFilter("nearest", "nearest")
 	
-	menumusic = love.audio.newSource("sounds/menu_back.ogg")
+	menumusic = love.audio.newSource("sounds/menu_back.ogg", "stream")
 	menumusic:setLooping(true)
 	menumusic:setVolume(0.01)
-	gamemusic = love.audio.newSource("sounds/game_back.ogg")
+	gamemusic = love.audio.newSource("sounds/game_back.ogg", "stream")
 	gamemusic:setLooping(true)
-	stabsound = love.audio.newSource("sounds/stab.ogg")
+	stabsound = love.audio.newSource("sounds/stab.ogg", "static")
 	
-	backsound = love.audio.newSource("sounds/back.ogg")
-	proceedsound = love.audio.newSource("sounds/proceed.ogg")
-	winningsound = love.audio.newSource("sounds/winning.ogg")
-	coinsound = love.audio.newSource("sounds/coin.ogg")
+	backsound = love.audio.newSource("sounds/back.ogg", "static")
+	proceedsound = love.audio.newSource("sounds/proceed.ogg", "static")
+	winningsound = love.audio.newSource("sounds/winning.ogg", "static")
+	coinsound = love.audio.newSource("sounds/coin.ogg", "static")
 	
 	loadlevels()
 	scale = 1
@@ -345,7 +341,7 @@ function loadmap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == nil or love.filesystem.getInfo("maps/" .. name .. ".png") == nil then
 		return false
 	end
 	
@@ -405,6 +401,10 @@ function loadmap(name)
 		for z = 1, mapdepth do
 			for x = 1, mapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*mapdepth-1 )
+				r = r * 255;
+				g = g * 255;
+				b = b * 255;
+				a = a * 255;
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -452,7 +452,7 @@ function loadmenumap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == nil or love.filesystem.getInfo("maps/" .. name .. ".png") == nil then
 		return false
 	end
 	
@@ -497,6 +497,10 @@ function loadmenumap(name)
 		for z = 1, menumapdepth do
 			for x = 1, menumapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*menumapdepth-1 )
+				r = r * 255;
+				g = g * 255;
+				b = b * 255;
+				a = a * 255;
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -559,14 +563,14 @@ function drawtile(cox, coy, coz, tile, xd, yd, zd)
 		if perspective ~= "up" then
 			if playerx == cox and playery == coy and playerz == coz then
 				local x, y = convertGRDtoSCR(pl.drawx, pl.drawy, pl.drawz)
-				love.graphics.setColor(255, 255, 255, 255*fadecolor)
+				lg_setColor(255, 255, 255, 255*fadecolor)
 				if won == false then
-					love.graphics.drawq(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-					love.graphics.setColor(255, 255, 255, 255*coinglowa)
+					love.graphics.draw(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					lg_setColor(255, 255, 255, 255*coinglowa)
 					love.graphics.draw(coinglowimg, round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale/4, playerscale/4, 29, 89)
 				else
-					love.graphics.drawq(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-					love.graphics.setColor(0, 255, 0, 255*fadecolor)
+					love.graphics.draw(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					lg_setColor(0, 255, 0, 255*fadecolor)
 					love.graphics.rectangle("fill", round(x)-2*playerscale, round(y+halfboxwidth*pitch*0.6)-16*playerscale-winwindowtimer/1*3*playerscale, 4*playerscale, winwindowtimer/1*3*playerscale)
 				end
 			end
@@ -576,7 +580,7 @@ function drawtile(cox, coy, coz, tile, xd, yd, zd)
 	for i, v in pairs(coins) do
 		if v[1] == cox and v[2] == coy and v[3] == coz then
 			local x, y = convertGRDtoSCR(cox, coy, coz)
-			love.graphics.setColor(255, 255, 255, 255*fadecolor)
+			lg_setColor(255, 255, 255, 255*fadecolor)
 			love.graphics.draw(coinimg, round(x), round(y+halfboxwidth*pitch*0.6-(math.sin(rainbowi*pi2)+1)*halfboxwidth/6+3*playerscale), 0, playerscale, playerscale, 10, 20)
 		end
 	end
@@ -721,7 +725,7 @@ function calculatevars()
 	
 	
 	shadowtop = 1-boxheightmod^2*shadowtopfactor
-	shadow1 = (1-math.abs((math.pi/2-math.mod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
+	shadow1 = (1-math.abs((math.pi/2-math.fmod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
 	shadow2 = 1-shadow1
 	
 	shadow1 = shadow1*shadowfactor+(1-shadowfactor)
@@ -737,7 +741,7 @@ function round(num, idp)
 end
 
 function loadsave()
-	if not love.filesystem.exists("save.txt") then
+	if love.filesystem.getInfo("save.txt") == nil then
 		return
 	end
 	
@@ -829,15 +833,15 @@ function rotatedsquare(mode, x, y, r, d)
 end
 
 function drawblock(x, y, width, height, fillcolor, outlinecolor, r)
-	if math.mod((r or 0), math.pi/2) ~= 0 then --Rotated
-		love.graphics.setColor(unpack(fillcolor))
+	if math.fmod((r or 0), math.pi/2) ~= 0 then --Rotated
+		lg_setColor(unpack(fillcolor))
 		rotatedsquare("fill", x+width/2+.5, y+height/2+.5, r or 0, width-1)
-		love.graphics.setColor(unpack(outlinecolor))
+		lg_setColor(unpack(outlinecolor))
 		rotatedsquare("line", x+width/2+.5, y+height/2+.5, r or 0, width)
 	else --not rotated
-		love.graphics.setColor(unpack(fillcolor))
+		lg_setColor(unpack(fillcolor))
 		love.graphics.rectangle("fill", x+1, y+1, width-1, height-1)
-		love.graphics.setColor(unpack(outlinecolor))
+		lg_setColor(unpack(outlinecolor))
 		love.graphics.rectangle("line", x+.5, y+.5, width, height)
 	end
 end
