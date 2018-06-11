@@ -49,7 +49,7 @@ function intro_draw()
 		end
 	end
 	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
-	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+	love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 end
 
 function intro_mousepressed()

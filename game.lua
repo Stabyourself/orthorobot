@@ -342,7 +342,7 @@ function game_draw()
 	local lmap = map
 	
 	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
-	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+	love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 	
 	if fadetimert == 1 then
 		gridfadecolor = fadecolor
@@ -398,11 +398,11 @@ function game_draw()
 		local x, y = convertGRDtoSCR(pl.drawx, pl.drawy, pl.drawz)
 		lg_setColor(255, 255, 255, 255*fadecolor)
 		if won == false then
-			love.graphics.drawq(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+			love.graphics.draw(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
 			lg_setColor(255, 255, 255, 255*coinglowa)
 			love.graphics.draw(coinglowimg, round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale/4, playerscale/4, 29, 89)
 		else
-			love.graphics.drawq(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+			love.graphics.draw(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
 			lg_setColor(0, 255, 0, 255*fadecolor)
 			love.graphics.rectangle("fill", round(x)-2*playerscale, round(y+halfboxwidth*pitch*0.6)-16*playerscale-winwindowtimer/1*3*playerscale, 4*playerscale, winwindowtimer/1*3*playerscale)
 		end
@@ -417,7 +417,7 @@ function game_draw()
 		love.graphics.rectangle("fill", 150, 1, width, 100)
 		lg_setColor(255, 255, 255, 100*alpha)
 		love.graphics.rectangle("fill", 159, 10, 80, 81)
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
 		lg_setColor(r, g, b, 200*alpha)
 		love.graphics.rectangle("line", 150, 1, width, 100)
 		love.graphics.draw(textavatarimg, 159, 11)
@@ -425,18 +425,18 @@ function game_draw()
 		love.graphics.setFont(winwindowfont)
 		lg_setColor(190, 206, 248, alpha*255)
 		local s = string.sub(filetable[currentmap].text, 1, math.max(0, string.len(filetable[currentmap].text)*(texttimer/texttime)-1))
-		if math.mod(rainbowi, 0.1) > 0.033 then
+		if math.fmod(rainbowi, 0.1) > 0.033 then
 			s = s .. "_"
 		end
 		
 		love.graphics.printf( s, 260, 10, 604, "left" )
 		
 		lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255*alpha)
-		love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+		love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 		mygraphicssetScissor()
 	end
 	
-	local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
+	local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
 	lg_setColor(r, g, b, 200*fadecolor)
 	
 	if fadetimer >= 0.5 and fadetimer2 < 0.5 then
@@ -479,7 +479,7 @@ function game_draw()
 		pausebuttons["togglesound"]:draw()
 		pausebuttons["tomenu"]:draw()
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
 		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-130, screenheight/2-height, 260, height*2)
 		
@@ -558,7 +558,7 @@ function game_draw()
 		pausebuttons["retry"]:draw()
 		pausebuttons["return"]:draw()
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5, 1)))
 		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", screenwidth/2-110, screenheight/2-height, 220, height*2)
 		

@@ -106,8 +106,8 @@ function menu_load(x, y)
 	levelbuttons = {}
 	for i = 1, #filetable do
 		if i >= (currentpage-1)*16+1 and i <= math.min(currentpage*16, #filetable) then
-			local j = math.mod(i-1, 16)+1
-			local x = round(((math.mod(j-1, 4)-1)+1) * 247.5 + 125)
+			local j = math.fmod(i-1, 16)+1
+			local x = round(((math.fmod(j-1, 4)-1)+1) * 247.5 + 125)
 			local y = math.ceil(j/4) * 100 - 570
 			if i <= unlockedlevels then
 				table.insert(levelbuttons, levelbutton:new(x, y, filetable[i].name, i, true))
@@ -116,8 +116,8 @@ function menu_load(x, y)
 			end
 		else
 			if i < (currentpage-1)*16+1 then
-				local j = math.mod(i-1, 16)+1
-				local x = round(((math.mod(j-1, 4)-1)+1) * 247.5 + 125 -screenwidth*math.ceil(((currentpage-1)*16+1 - i)/16))
+				local j = math.fmod(i-1, 16)+1
+				local x = round(((math.fmod(j-1, 4)-1)+1) * 247.5 + 125 -screenwidth*math.ceil(((currentpage-1)*16+1 - i)/16))
 				local y = math.ceil(j/4) * 100 - 570
 				if i <= unlockedlevels then
 					table.insert(levelbuttons, levelbutton:new(x, y, filetable[i].name, i, true))
@@ -125,8 +125,8 @@ function menu_load(x, y)
 					table.insert(levelbuttons, levelbutton:new(x, y, filetable[i].name, i, false))
 				end
 			else
-				local j = math.mod(i-1, 16)+1
-				local x = round(((math.mod(j-1, 4)-1)+1) * 247.5 + 125 + screenwidth*math.floor((i - ((currentpage-1)*16+1))/16))
+				local j = math.fmod(i-1, 16)+1
+				local x = round(((math.fmod(j-1, 4)-1)+1) * 247.5 + 125 + screenwidth*math.floor((i - ((currentpage-1)*16+1))/16))
 				local y = math.ceil(j/4) * 100 - 570
 				
 				if i <= unlockedlevels then
@@ -363,7 +363,7 @@ function menu_draw()
 		end
 		love.graphics.setFont(helpfont)
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi, 1)))
 		lg_setColor(r, g, b, 255*fadecolor)
 		for i = 1, #wintext do
 			love.graphics.print(wintext[i], screenwidth+screenwidth*0.5 - helpfont:getWidth(wintext[i])/2, i*45+150-500)
@@ -388,7 +388,7 @@ function menu_draw()
 		for i = 1, #creditstext do
 			lg_setColor(255, 255, 255, 255*fadecolor)
 			if i == 3 then
-				local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+.66, 1)))
+				local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+.66, 1)))
 				lg_setColor(r, g, b, 255*fadecolor)
 				love.graphics.draw(accentimg, screenwidth*1.5+100, 266)
 			end
@@ -399,7 +399,7 @@ function menu_draw()
 		love.graphics.print("Menu Music: 'Trooped' by BlueAngelEagle         Game Music: 'oh' by CapsAdmin", screenwidth+83, 530)
 		love.graphics.setFont(menufont)
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+.33, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+.33, 1)))
 		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.print("Saso", screenwidth*1.5 + 230, 350)
 		love.graphics.draw(ssssimg, screenwidth*1.5+307, 366)
@@ -438,7 +438,7 @@ function menu_draw()
 	love.graphics.print("2011 Stabyourself.net (v1.1.1)", screenwidth/2-140, 730)
 	
 	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
-	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
+	love.graphics.draw(scanlineimg, 0, math.fmod(creditss*3, 5)-5)
 end
 
 function loadlevels()
@@ -578,7 +578,7 @@ end
 function newBox(first)
 	local rand = math.random(4)
 	local dir = "hor"
-	if math.mod(rand, 2) == 1 then
+	if math.fmod(rand, 2) == 1 then
 		dir = "ver"
 	end
 	local x, y, width, height

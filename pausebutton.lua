@@ -37,7 +37,7 @@ end
 
 function pausebutton:draw()
 	local r, g, b = 190, 206, 248
-	local tr, tg, tb = unpack(getrainbowcolor(math.mod(rainbowi+.5+self.value*0.5, 1)))
+	local tr, tg, tb = unpack(getrainbowcolor(math.fmod(rainbowi+.5+self.value*0.5, 1)))
 	
 	r = r + (tr-r)*(self.value*.7+.3)
 	g = g + (tg-g)*(self.value*.7+.3)

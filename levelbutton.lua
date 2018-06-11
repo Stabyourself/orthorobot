@@ -65,7 +65,7 @@ function levelbutton:draw()
 		end
 		
 		local r, g, b = 190, 206, 248
-		local tr, tg, tb = unpack(getrainbowcolor(math.mod(rainbowi+.5+self.value*0.5, 1)))
+		local tr, tg, tb = unpack(getrainbowcolor(math.fmod(rainbowi+.5+self.value*0.5, 1)))
 		
 		r = r + (tr-r)*(self.value*.7+.3)
 		g = g + (tg-g)*(self.value*.7+.3)
@@ -161,7 +161,7 @@ function levelbutton:draw()
 		love.graphics.setFont(coinsfont)
 		love.graphics.print(#filetable[self.i].collectedcoins .. "/" .. filetable[self.i].coins, self.x+self.width/2+17-self.coinwidth/2, self.y+50)
 		
-		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+0.5+self.value*0.5, 1)))
+		local r, g, b = unpack(getrainbowcolor(math.fmod(rainbowi+0.5+self.value*0.5, 1)))
 		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.rectangle("line", round(self.x-self.width/2)-1, round(self.y)-1, self.width+2, self.height+2)
 	else		

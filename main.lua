@@ -10,37 +10,15 @@
 --Other credits
 --yay.png (star) by http://www.psdgraphics.com/
 
---Version compatibility stuff
-major, minor, revision, codename = love.getVersion()
-if major == 0 and minor <= 9 then
-	lbutton = "l"
-	rbutton = "r"
-else
-	lbutton = 1
-	rbutton = 2
-end
-math.mod = math.fmod
-if not love.graphics.drawq then
-	love.graphics.drawq = love.graphics.draw
-end
+lbutton = 1
+rbutton = 2
 
-function filesexists(file)
-	if major >= 11 then
-		return love.filesystem.getInfo(file) ~= nil
-	else
-		return love.filesystem.exists(file)
-	end
-end
-
+--TODO: change color code to use 0-1 instead of 0-255
 function lg_setColor(r, g, b, a)
-	if major >= 11 then
-		if a == nil then
-			a = 255
-		end
-		love.graphics.setColor(r/255, g/255, b/255, a/255)
-	else
-		love.graphics.setColor(r, g, b, a)
+	if a == nil then
+		a = 255
 	end
+	love.graphics.setColor(r/255, g/255, b/255, a/255)
 end
 
 local lg_polygon = love.graphics.polygon
@@ -363,7 +341,7 @@ function loadmap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if filesexists("maps/" .. name .. ".txt") == false or filesexists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == nil or love.filesystem.getInfo("maps/" .. name .. ".png") == nil then
 		return false
 	end
 	
@@ -423,12 +401,10 @@ function loadmap(name)
 		for z = 1, mapdepth do
 			for x = 1, mapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*mapdepth-1 )
-				if major >= 11 then
-					r = r * 255;
-					g = g * 255;
-					b = b * 255;
-					a = a * 255;
-				end
+				r = r * 255;
+				g = g * 255;
+				b = b * 255;
+				a = a * 255;
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -476,7 +452,7 @@ function loadmenumap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if filesexists("maps/" .. name .. ".txt") == false or filesexists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == nil or love.filesystem.getInfo("maps/" .. name .. ".png") == nil then
 		return false
 	end
 	
@@ -521,12 +497,10 @@ function loadmenumap(name)
 		for z = 1, menumapdepth do
 			for x = 1, menumapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*menumapdepth-1 )
-				if major >= 11 then
-					r = r * 255;
-					g = g * 255;
-					b = b * 255;
-					a = a * 255;
-				end
+				r = r * 255;
+				g = g * 255;
+				b = b * 255;
+				a = a * 255;
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -591,11 +565,11 @@ function drawtile(cox, coy, coz, tile, xd, yd, zd)
 				local x, y = convertGRDtoSCR(pl.drawx, pl.drawy, pl.drawz)
 				lg_setColor(255, 255, 255, 255*fadecolor)
 				if won == false then
-					love.graphics.drawq(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					love.graphics.draw(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
 					lg_setColor(255, 255, 255, 255*coinglowa)
 					love.graphics.draw(coinglowimg, round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale/4, playerscale/4, 29, 89)
 				else
-					love.graphics.drawq(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					love.graphics.draw(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
 					lg_setColor(0, 255, 0, 255*fadecolor)
 					love.graphics.rectangle("fill", round(x)-2*playerscale, round(y+halfboxwidth*pitch*0.6)-16*playerscale-winwindowtimer/1*3*playerscale, 4*playerscale, winwindowtimer/1*3*playerscale)
 				end
@@ -751,7 +725,7 @@ function calculatevars()
 	
 	
 	shadowtop = 1-boxheightmod^2*shadowtopfactor
-	shadow1 = (1-math.abs((math.pi/2-math.mod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
+	shadow1 = (1-math.abs((math.pi/2-math.fmod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
 	shadow2 = 1-shadow1
 	
 	shadow1 = shadow1*shadowfactor+(1-shadowfactor)
@@ -767,7 +741,7 @@ function round(num, idp)
 end
 
 function loadsave()
-	if not filesexists("save.txt") then
+	if love.filesystem.getInfo("save.txt") == nil then
 		return
 	end
 	
@@ -859,7 +833,7 @@ function rotatedsquare(mode, x, y, r, d)
 end
 
 function drawblock(x, y, width, height, fillcolor, outlinecolor, r)
-	if math.mod((r or 0), math.pi/2) ~= 0 then --Rotated
+	if math.fmod((r or 0), math.pi/2) ~= 0 then --Rotated
 		lg_setColor(unpack(fillcolor))
 		rotatedsquare("fill", x+width/2+.5, y+height/2+.5, r or 0, width-1)
 		lg_setColor(unpack(outlinecolor))
