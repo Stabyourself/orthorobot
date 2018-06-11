@@ -34,7 +34,7 @@ function intro_draw()
 			a = (1-(introprogress-(introduration-introfadetime))/introfadetime) * 255
 		end
 		
-		love.graphics.setColor(255, 255, 255, a)
+		lg_setColor(255, 255, 255, a)
 		
 		if introprogress > introfadetime+0.3 and introprogress < introduration - introfadetime then
 			local y = (introprogress-0.2-introfadetime) / (introduration-2*introfadetime) * 206 * 5
@@ -48,7 +48,7 @@ function intro_draw()
 			love.graphics.draw(logo, screenwidth/2-142, screenheight/2-150)
 		end
 	end
-	love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
+	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
 	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
 end
 
@@ -61,4 +61,4 @@ function intro_keypressed()
 	stabsound:stop()
 	menu_load()
 end
-	
+

@@ -273,7 +273,7 @@ end
 function menu_draw()
 	love.graphics.translate(menuoffsetx, menuoffset)
 	
-	love.graphics.setColor(100, 100, 100, 100*fadecolor)
+	lg_setColor(100, 100, 100, 100*fadecolor)
 	love.graphics.rectangle("fill", 30, 30, 964, 230)
 	
 	gridfadecolor = fadecolor
@@ -348,7 +348,7 @@ function menu_draw()
 	end
 	
 	if menuoffset > 0 and menuoffsetx < 0 and menuoffsett == 500 then --win screen
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		for x = 2, 6 do --0-4
 			love.graphics.draw(winplayerimg, screenwidth+screenwidth/7*x, screenheight/5-500, math.sin(creditss+(x-2)/16*math.pi*2)*0.2, 1, 1, 42, 66)
 		end
@@ -364,7 +364,7 @@ function menu_draw()
 		love.graphics.setFont(helpfont)
 		
 		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi, 1)))
-		love.graphics.setColor(r, g, b, 255*fadecolor)
+		lg_setColor(r, g, b, 255*fadecolor)
 		for i = 1, #wintext do
 			love.graphics.print(wintext[i], screenwidth+screenwidth*0.5 - helpfont:getWidth(wintext[i])/2, i*45+150-500)
 		end
@@ -382,14 +382,14 @@ function menu_draw()
 		love.graphics.translate(screenwidth+screenwidth/2, (#creditstext-1)*100-70)
 		love.graphics.rotate(creditsr)
 		love.graphics.translate(-screenwidth-screenwidth/2, -(#creditstext-1)*100+70)
-		love.graphics.setColor(100, 100, 100, 100*fadecolor)
+		lg_setColor(100, 100, 100, 100*fadecolor)
 		love.graphics.rectangle("fill", screenwidth*1.5-480, 50, 960, 510)
 		
 		for i = 1, #creditstext do
-			love.graphics.setColor(255, 255, 255, 255*fadecolor)
+			lg_setColor(255, 255, 255, 255*fadecolor)
 			if i == 3 then
 				local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+.66, 1)))
-				love.graphics.setColor(r, g, b, 255*fadecolor)
+				lg_setColor(r, g, b, 255*fadecolor)
 				love.graphics.draw(accentimg, screenwidth*1.5+100, 266)
 			end
 			love.graphics.print(creditstext[i], screenwidth*1.5 - menufont:getWidth(creditstext[i])/2, i*100-50)
@@ -400,7 +400,7 @@ function menu_draw()
 		love.graphics.setFont(menufont)
 		
 		local r, g, b = unpack(getrainbowcolor(math.mod(rainbowi+.33, 1)))
-		love.graphics.setColor(r, g, b, 255*fadecolor)
+		lg_setColor(r, g, b, 255*fadecolor)
 		love.graphics.print("Saso", screenwidth*1.5 + 230, 350)
 		love.graphics.draw(ssssimg, screenwidth*1.5+307, 366)
 		
@@ -413,12 +413,12 @@ function menu_draw()
 	if menuoffsetx > 0 then --HELP
 		--[[love.graphics.setFont(helpfont)
 		for i = 1, #helptext do
-			love.graphics.setColor(255, 255, 255, 255*fadecolor)
+			lg_setColor(255, 255, 255, 255*fadecolor)
 			love.graphics.print(helptext[i], -screenwidth*0.5 - helpfont:getWidth(helptext[i])/2, (i-1)*65+20)
 		end
 		love.graphics.setFont(menufont)--]]
 		
-		love.graphics.setColor(255, 255, 255, 255*fadecolor)
+		lg_setColor(255, 255, 255, 255*fadecolor)
 		love.graphics.draw(helptextimg, -screenwidth, 0)
 		love.graphics.draw(helpplayerimg, -350, 60, creditsr, 1, 1, 28, 64)
 		love.graphics.draw(helpgoalimg, -200, 80)
@@ -434,10 +434,10 @@ function menu_draw()
 	sizebutton:draw()
 	
 	love.graphics.setFont(winwindowfont)
-	love.graphics.setColor(255, 255, 255, 100*fadecolor)
+	lg_setColor(255, 255, 255, 100*fadecolor)
 	love.graphics.print("2011 Stabyourself.net (v1.1.1)", screenwidth/2-140, 730)
 	
-	love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
+	lg_setColor(fillcolor[1], fillcolor[2], fillcolor[3], 255)
 	love.graphics.draw(scanlineimg, 0, math.mod(creditss*3, 5)-5)
 end
 
