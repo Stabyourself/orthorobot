@@ -1,5 +1,5 @@
 --ORTHO ROBOT
---by Maurice Guégan
+--by Maurice Guï¿½gan
 --Stabyourself.net
 --Made in 7 days for a competition (Total time: ~50 hours)
 
@@ -138,17 +138,17 @@ function love.load()
 	ssssimg = love.graphics.newImage("ssss.png");ssssimg:setFilter("nearest", "nearest")
 	accentimg = love.graphics.newImage("accent.png");accentimg:setFilter("nearest", "nearest")
 	
-	menumusic = love.audio.newSource("sounds/menu_back.ogg")
+	menumusic = love.audio.newSource("sounds/menu_back.ogg", "stream")
 	menumusic:setLooping(true)
 	menumusic:setVolume(0.01)
-	gamemusic = love.audio.newSource("sounds/game_back.ogg")
+	gamemusic = love.audio.newSource("sounds/game_back.ogg", "stream")
 	gamemusic:setLooping(true)
-	stabsound = love.audio.newSource("sounds/stab.ogg")
+	stabsound = love.audio.newSource("sounds/stab.ogg", "static")
 	
-	backsound = love.audio.newSource("sounds/back.ogg")
-	proceedsound = love.audio.newSource("sounds/proceed.ogg")
-	winningsound = love.audio.newSource("sounds/winning.ogg")
-	coinsound = love.audio.newSource("sounds/coin.ogg")
+	backsound = love.audio.newSource("sounds/back.ogg", "static")
+	proceedsound = love.audio.newSource("sounds/proceed.ogg", "static")
+	winningsound = love.audio.newSource("sounds/winning.ogg", "static")
+	coinsound = love.audio.newSource("sounds/coin.ogg", "static")
 	
 	loadlevels()
 	scale = 1
@@ -345,7 +345,7 @@ function loadmap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == false or love.filesystem.getInfo("maps/" .. name .. ".png") == false then
 		return false
 	end
 	
@@ -452,7 +452,7 @@ function loadmenumap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if love.filesystem.getInfo("maps/" .. name .. ".txt") == false or love.filesystem.getInfo("maps/" .. name .. ".png") == false then
 		return false
 	end
 	
@@ -737,7 +737,7 @@ function round(num, idp)
 end
 
 function loadsave()
-	if not love.filesystem.exists("save.txt") then
+	if not love.filesystem.getInfo("save.txt") then
 		return
 	end
 	

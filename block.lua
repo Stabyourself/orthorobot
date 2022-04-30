@@ -9,16 +9,15 @@ function block:init(x, y, z, i)
 	self.facevisible = {true, true, true, true, true}
 	
 	self.facecolor = {}
-	self.facecolor[1] = {255, 0, 0}
-	self.facecolor[2] = {0, 255, 0}
-	self.facecolor[3] = {0, 0, 255}
-	self.facecolor[4] = {255, 255, 0}
-	self.facecolor[5] = {255, 255, 255}
-	
+	self.facecolor[1] = {1, 0, 0}
+	self.facecolor[2] = {0, 1, 0}
+	self.facecolor[3] = {0, 0, 1}
+	self.facecolor[4] = {1, 1, 0}
+	self.facecolor[5] = {1, 1, 1}
 	
 	self.gridcolor = {}
-	self.gridcolor[1] = {100, 100, 100}
-	self.gridcolor[2] = {150, 150, 150}
+	self.gridcolor[1] = {100/255, 100/255, 100/255}
+	self.gridcolor[2] = {150/255, 150/255, 150/255}
 end
 
 function block:updatevisiblefaces()
