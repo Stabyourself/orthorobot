@@ -1,3 +1,11 @@
+-- joystick, android-only
+local kw = 64
+local keys = {
+  {'w', kw, kw * 2},
+  {'a', 0, kw},
+  {'s', kw, 0},
+  {'d', kw * 2, kw},
+}
 function game_load(i)
 	currentmap = i
 	gamestate = "game"
@@ -72,18 +80,18 @@ function game_load(i)
 	scorewarps = 0
 	
 	pausebuttons = {}
-	pausebuttons["next"] = pausebutton:new(screenwidth/2, screenheight/2+118, "Next Level", completed_next)
-	pausebuttons["retry"] = pausebutton:new(screenwidth/2, screenheight/2+145, "Improve", completed_retry)
-	pausebuttons["return"] = pausebutton:new(screenwidth/2, screenheight/2+172, "Back to Menu", completed_return)
+	pausebuttons["next"] = pausebutton:new(screenwidth/2, screenheight/2+80, "Next Level", completed_next)
+	pausebuttons["retry"] = pausebutton:new(screenwidth/2, screenheight/2+150, "Improve", completed_retry)
+	pausebuttons["return"] = pausebutton:new(screenwidth/2, screenheight/2+220, "Back to Menu", completed_return)
 	
-	pausebuttons["back"] = pausebutton:new(screenwidth/2, screenheight/2-24, "Back to Game", pause_back)
-	pausebuttons["restart"] = pausebutton:new(screenwidth/2, screenheight/2+3, "Restart Level", pause_restart)
+	pausebuttons["back"] = pausebutton:new(screenwidth/2, screenheight/2-108, "Back to Game", pause_back)
+	pausebuttons["restart"] = pausebutton:new(screenwidth/2, screenheight/2-41, "Restart Level", pause_restart)
 	if soundenabled then
-		pausebuttons["togglesound"] = pausebutton:new(screenwidth/2, screenheight/2+30, "Sound ON", pause_togglesound)
+		pausebuttons["togglesound"] = pausebutton:new(screenwidth/2, screenheight/2+26, "Sound ON", pause_togglesound)
 	else
-		pausebuttons["togglesound"] = pausebutton:new(screenwidth/2, screenheight/2+30, "Sound OFF", pause_togglesound)
+		pausebuttons["togglesound"] = pausebutton:new(screenwidth/2, screenheight/2+26, "Sound OFF", pause_togglesound)
 	end
-	pausebuttons["tomenu"] = pausebutton:new(screenwidth/2, screenheight/2+57, "Back to Menu", pause_tomenu)
+	pausebuttons["tomenu"] = pausebutton:new(screenwidth/2, screenheight/2+93, "Back to Menu", pause_tomenu)
 	pausebuttons["back"].width = 258
 	pausebuttons["restart"].width = 258
 	pausebuttons["togglesound"].width = 258
@@ -219,6 +227,7 @@ function game_update(dt)
 			winwindowtimer = 1
 		end
 	elseif fadetimer3 == 1.5 and not gamepaused then
+
 		scoretime = scoretime + dt
 	end
 
@@ -465,14 +474,14 @@ function game_draw()
 	love.graphics.line(0, 53, 111, 53)
 	
 	if pausemenutimer > 0 then
-		local height = (100-(1-((pausemenutimer)/1))^2 * 100)
+		local height = 200*(pausemenutimer^2)
 		mygraphicssetScissor(screenwidth/2-130-1, screenheight/2-height-1, 260+1, height*2+1)
 		love.graphics.setColor(0, 0, 0, 200*fadecolor)
 		love.graphics.rectangle("fill", screenwidth/2-130, screenheight/2-height, 259, height*2)
 		love.graphics.setColor(255, 255, 255, 255*fadecolor)
 		
 		love.graphics.setFont(winwindowtitlefont, 20)
-		love.graphics.print("Game Paused", screenwidth/2-111, screenheight/2-80)
+		love.graphics.print("Game Paused", screenwidth/2-111, screenheight/2-180)
 		
 		pausebuttons["back"]:draw()
 		pausebuttons["restart"]:draw()
@@ -487,8 +496,7 @@ function game_draw()
 	end
 	
 	if won then
-		
-		local height = (200-(1-((winwindowtimer)/1))^2 * 200)
+		local height = 285*(winwindowtimer^2)
 		mygraphicssetScissor(0, screenheight/2-height-1, screenwidth, height*2+1)
 		
 		if newstar then
@@ -501,56 +509,56 @@ function game_draw()
 		love.graphics.setColor(255, 255, 255, 255*fadecolor)
 		
 		love.graphics.setFont(winwindowtitlefont, 20)
-		love.graphics.print("Level Done!", screenwidth/2-91, screenheight/2-200)
-		love.graphics.draw(clockimg, screenwidth/2-92, screenheight/2-159, 0, 2, 2)
-		love.graphics.draw(stepsimg, screenwidth/2-92, screenheight/2-59, 0, 2, 2)
-		love.graphics.draw(warpsimg, screenwidth/2-92, screenheight/2+41, 0, 2, 2)
+		love.graphics.print("Level Done!", screenwidth/2-91, screenheight/2-290)
+		love.graphics.draw(clockimg, screenwidth/2-92, screenheight/2-240, 0, 2, 2)
+		love.graphics.draw(stepsimg, screenwidth/2-92, screenheight/2-140, 0, 2, 2)
+		love.graphics.draw(warpsimg, screenwidth/2-92, screenheight/2-40, 0, 2, 2)
 		
-		love.graphics.print("Time", screenwidth/2-70, screenheight/2-170)
-		love.graphics.print("Steps", screenwidth/2-70, screenheight/2-70)
-		love.graphics.print("Warps", screenwidth/2-70, screenheight/2+30)
-		
-		love.graphics.setFont(winwindowfont, 20)
-		love.graphics.print("You:", screenwidth/2-70, screenheight/2-145)
-		love.graphics.print("You:", screenwidth/2-70, screenheight/2-45)
-		love.graphics.print("You:", screenwidth/2-70, screenheight/2+55)
+		love.graphics.print("Time", screenwidth/2-70, screenheight/2-250)
+		love.graphics.print("Steps", screenwidth/2-70, screenheight/2-150)
+		love.graphics.print("Warps", screenwidth/2-70, screenheight/2-50)
 		
 		love.graphics.setFont(winwindowfont, 20)
-		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2-128)
-		love.graphics.print(besttime or "-", screenwidth/2+30, screenheight/2-128)
-		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2-28)
-		love.graphics.print(beststeps or "-", screenwidth/2+30, screenheight/2-28)
-		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2+72)
-		love.graphics.print(bestwarps or "-", screenwidth/2+30, screenheight/2+72)
+		love.graphics.print("You:", screenwidth/2-70, screenheight/2-220)
+		love.graphics.print("You:", screenwidth/2-70, screenheight/2-120)
+		love.graphics.print("You:", screenwidth/2-70, screenheight/2-20)
+		
+		love.graphics.setFont(winwindowfont, 20)
+		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2-200)
+		love.graphics.print(besttime or "-", screenwidth/2+30, screenheight/2-200)
+		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2-100)
+		love.graphics.print(beststeps or "-", screenwidth/2+30, screenheight/2-100)
+		love.graphics.print("P. Best:", screenwidth/2-70, screenheight/2)
+		love.graphics.print(bestwarps or "-", screenwidth/2+30, screenheight/2)
 		
 		if timebeaten then
 			love.graphics.setColor(0, 255, 0, 255*fadecolor)
 		else
 			love.graphics.setColor(255, 0, 0, 255*fadecolor)
 		end
-		love.graphics.print(scoretime, screenwidth/2+30, screenheight/2-145)
+		love.graphics.print(scoretime, screenwidth/2+30, screenheight/2-220)
 		
 		if stepsbeaten then
 			love.graphics.setColor(0, 255, 0, 255*fadecolor)
 		else
 			love.graphics.setColor(255, 0, 0, 255*fadecolor)
 		end
-		love.graphics.print(scoresteps, screenwidth/2+30, screenheight/2-45)
+		love.graphics.print(scoresteps, screenwidth/2+30, screenheight/2-120)
 		
 		if warpsbeaten then
 			love.graphics.setColor(0, 255, 0, 255*fadecolor)
 		else
 			love.graphics.setColor(255, 0, 0, 255*fadecolor)
 		end
-		love.graphics.print(scorewarps, screenwidth/2+30, screenheight/2+55)
+		love.graphics.print(scorewarps, screenwidth/2+30, screenheight/2-20)
 		
 		love.graphics.setColor(255, 255, 255, 255*fadecolor)
-		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-111)
-		love.graphics.print(goaltime, screenwidth/2+30, screenheight/2-111)
-		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-11)
-		love.graphics.print(goalsteps, screenwidth/2+30, screenheight/2-11)
-		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2+89)
-		love.graphics.print(goalwarps, screenwidth/2+30, screenheight/2+89)
+		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-180)
+		love.graphics.print(goaltime, screenwidth/2+30, screenheight/2-180)
+		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2-80)
+		love.graphics.print(goalsteps, screenwidth/2+30, screenheight/2-80)
+		love.graphics.print("Goal:", screenwidth/2-70, screenheight/2+20)
+		love.graphics.print(goalwarps, screenwidth/2+30, screenheight/2+20)
 		
 		if currentmap ~= #filetable then
 			pausebuttons["next"]:draw()
@@ -564,6 +572,14 @@ function game_draw()
 		
 		mygraphicssetScissor()
 	end		
+  -- joystick
+  if MOBILE and keys then
+    love.graphics.setColor(255, 255, 255, 100)
+    for _, v in pairs(keys) do
+      love.graphics.rectangle('fill', 8 + v[2], screenheight*0.9 - v[3], kw, kw)
+    end
+  end
+  love.graphics.setColor(255, 255, 255, 255)
 end
 
 function updateperspective(persp)
@@ -1158,6 +1174,18 @@ function game_keypressed(key)
 end
 
 function game_mousepressed(x, y, button)
+  -- joystick
+  if MOBILE and keys then
+    for _, v in pairs(keys) do
+      local kx, ky = 8 + v[2], screenheight * 0.9 - v[3]
+      if kx + kw > x
+      and x > kx
+      and ky + kw > y
+      and y > ky
+      then love.keypressed(v[1]) end
+    end
+  end
+
 	for i, v in pairs(pausebuttons) do
 		v:mousepressed(x, y, button)
 	end
