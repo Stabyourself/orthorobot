@@ -69,15 +69,6 @@ function menu_load(x, y)
 		table.insert(menubuttons, menubutton:new(screenwidth-141, -45, "Next >", button_nextpage))
 		table.insert(menubuttons, menubutton:new(198, -45, "< Previous", button_prevpage))
 		table.insert(menubuttons, menubutton:new(screenwidth/2+screenwidth, 0, "< Awesome", button_winback))
-		
-		if scale == 1 then
-			sizebutton = pausebutton:new(0, 0, "Help, this game doesn't fit on my screen!", scalebutton)
-		else
-			sizebutton = pausebutton:new(0, 0, "Nevermind, the game does fit on my screen.", scalebutton)
-		end
-		
-		sizebutton.width = 680
-		sizebutton.active = true
 	else
 		menubuttons[5].active = true
 	end
@@ -88,6 +79,7 @@ function menu_load(x, y)
 	else
 		pausebuttons["menutogglesound"] = pausebutton:new(109, 0, "Sound OFF", menu_togglesound)
 	end
+	pausebuttons["menutogglesound"].height = 24
 	pausebuttons["menutogglesound"].active = true
 	
 	currentpage = math.min(math.ceil(currentmap/16), math.ceil(#filetable/16))
@@ -143,16 +135,6 @@ function menu_load(x, y)
 	fadetimert = 1
 	
 	skipupdate = true
-end
-
-function scalebutton()
-	if scale == 1 then
-		changescale(0.75)
-		sizebutton:changetext("Nevermind, the game does fit on my screen.")
-	else
-		changescale(1)
-		sizebutton:changetext("Help, this game doesn't fit on my screen!")
-	end
 end
 
 function menu_update(dt)	
@@ -265,9 +247,6 @@ function menu_update(dt)
 		v:update(dt)
 	end
 	pausebuttons["menutogglesound"]:update(dt)
-	sizebutton.x = menuoffsetx-screenwidth/2
-	sizebutton.y = menuoffset+615
-	sizebutton:update(dt)
 end
 
 function menu_draw()
@@ -431,7 +410,6 @@ function menu_draw()
 	love.graphics.translate(-menuoffsetx, -menuoffset)
 	
 	pausebuttons["menutogglesound"]:draw()
-	sizebutton:draw()
 	
 	love.graphics.setFont(winwindowfont)
 	love.graphics.setColor(255, 255, 255, 100*fadecolor)
@@ -640,7 +618,6 @@ function menu_mousepressed(x, y, button)
 		end
 	end
 	pausebuttons["menutogglesound"]:mousepressed(x + menuoffsetx, y + menuoffset, button)
-	sizebutton:mousepressed(x + menuoffsetx, y + menuoffset, button)
 end
 
 function menu_togglesound()

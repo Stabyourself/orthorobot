@@ -28,6 +28,7 @@ local lg_polygon = love.graphics.polygon
 local lg_setColor = love.graphics.setColor
 
 function love.load()
+	MOBILE = love.system.getOS() == 'Android'
 	require "intro"
 	require "menu"
 	require "game"
@@ -151,7 +152,6 @@ function love.load()
 	coinsound = love.audio.newSource("sounds/coin.ogg")
 	
 	loadlevels()
-	scale = 1
 	loadsave()
 	currentmap = unlockedlevels
 	
@@ -160,25 +160,23 @@ function love.load()
 	intro_load()
 	
 	skipupdate = true
-	 
-	love.graphics.setLineWidth(1/scale)
-	if scale ~= 1 then
-		changescale(scale)
-	end
 	
 	screenwidth = 1024
 	screenheight = 768
+	changescale()
 end
 
-function changescale(s)
-	scale = s
+function changescale()
+  local dw, dh = love.graphics.getDimensions()
+  hs, vs = dw/1024, dh/768
+  --scale = math.min(hs, vs)
 	if love.graphics.setMode then
-		love.graphics.setMode(1024*scale, 768*scale, false, true)
+		love.graphics.setMode(dw, dh, false, true)
 	elseif love.window.setMode then
-		love.window.setMode(1024*scale, 768*scale, {fullscreen=false, vsync=true})
+		love.window.setMode(dw, dh, {fullscreen=false, vsync=true})
 	end
 	
-	love.graphics.setLineWidth(1/scale)
+	love.graphics.setLineWidth(1/math.min(hs, vs))
 end
 
 function love.update(dt)
@@ -236,7 +234,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.scale(scale, scale)
+	love.graphics.scale(hs, vs)
 	if gamestate == "intro" then
 		intro_draw()
 	elseif gamestate == "game" then
@@ -265,20 +263,20 @@ function love.keypressed(key, unicode)
 end
 
 function mymousegetX()
-	return love.mouse.getX()*(1/scale)
+	return love.mouse.getX()*(1/hs)
 end
 
 function mymousegetY()
-	return love.mouse.getY()*(1/scale)
+	return love.mouse.getY()*(1/vs)
 end
 
 function mymousegetPosition()
-	return love.mouse.getX()*(1/scale), love.mouse.getY()*(1/scale)
+	return mymousegetX(), mymousegetY()
 end
 
 function mygraphicssetScissor(x, y, w, h)
 	if x and y and w and h then
-		love.graphics.setScissor(x*scale, y*scale, w*scale, h*scale)
+		love.graphics.setScissor(x*hs, y*vs, w*hs, h*vs)
 	else
 		love.graphics.setScissor()
 	end
@@ -287,15 +285,15 @@ end
 function mygraphicsgetScissor()
 	local x, y, w, h = love.graphics.getScissor()
 	if x and y and w and h then
-		return x*(1/scale), y*(1/scale), w*(1/scale), h*(1/scale)
+		return x*(1/hs), y*(1/vs), w*(1/hs), h*(1/vs)
 	else
 		return false
 	end
 end
 
 function love.mousepressed(x, y, button)
-	x = x * (1/scale)
-	y = y * (1/scale)
+	x = x * (1/hs)
+	y = y * (1/vs)
 	if gamestate == "game" then
 		game_mousepressed(x, y, button)
 	elseif gamestate == "menu" then
@@ -306,8 +304,8 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-	x = x * (1/scale)
-	y = y * (1/scale)
+	x = x * (1/hs)
+	y = y * (1/vs)
 	if gamestate == "game" then
 		game_mousereleased(x, y, button)
 	end
@@ -806,7 +804,7 @@ function savesave()
 			end
 		end
 	end
-	s = s .. "scale=" .. scale .. ";"
+	--s = s .. "scale=" .. scale .. ";"
 	if soundenabled then
 		s = s .. "sound=true;"
 	else

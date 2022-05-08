@@ -9,7 +9,7 @@ function pausebutton:init(x, y, text, func)
 	self.textwidth = levelselectfont:getWidth(self.text)
 	self.active = false
 	
-	self.height = 23
+	self.height = 64
 	self.width = 218
 end
 
@@ -50,8 +50,12 @@ function pausebutton:draw()
 	love.graphics.setColor(r, g, b, 100*fadecolor)
 	love.graphics.rectangle("fill", self.x-self.width/2, self.y, self.width, self.height)
 	love.graphics.setColor(0, 0, 0, 255*fadecolor)
+
+  local oy = self.height / 4 -1
+  if self.height / 4 <= 6 then oy = - oy end
+
 	if self.text then
-		love.graphics.print(self.text, self.x - self.textwidth/2+1, self.y-7)
+		love.graphics.print(self.text, self.x - self.textwidth/2+1, self.y+oy)
 	end
 	mygraphicssetScissor()
 	
@@ -59,12 +63,12 @@ function pausebutton:draw()
 	
 	mygraphicssetScissor(round(self.x-self.width/2), scissory or self.y, round(self.width/2*self.value), scissorheight or self.height)
 	if self.text then
-		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y-7)
+		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y+oy)
 	end
 	
 	mygraphicssetScissor(round(self.x+self.width/2-(self.width/2*self.value)), scissory or self.y, round(self.width/2), scissorheight or self.height)
 	if self.text then
-		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y-7)
+		love.graphics.print(self.text, round(self.x - self.textwidth/2+1), self.y+oy)
 	end
 	
 	if scissorx then
