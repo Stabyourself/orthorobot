@@ -1,5 +1,5 @@
 --ORTHO ROBOT
---by Maurice Guégan
+--by Maurice GuÃ©gan
 --Stabyourself.net
 --Made in 7 days for a competition (Total time: ~50 hours)
 
@@ -10,18 +10,14 @@
 --Other credits
 --yay.png (star) by http://www.psdgraphics.com/
 
---Version compatibility stuff
-major, minor, revision, codename = love.getVersion()
-if major == 0 and minor <= 9 then
-	lbutton = "l"
-	rbutton = "r"
-else
-	lbutton = 1
-	rbutton = 2
-end
-math.mod = math.fmod
-if not love.graphics.drawq then
-	love.graphics.drawq = love.graphics.draw
+lbutton = 1
+rbutton = 2
+
+function setcolor(r, g, b, a) --0-255 to 0-1
+	if type(r) == "table" then
+		r, g, b, a = unpack(r)
+	end
+	love.graphics.setColor(r/255, g/255, b/255, (a or 255)/255)
 end
 
 local lg_polygon = love.graphics.polygon
@@ -138,17 +134,17 @@ function love.load()
 	ssssimg = love.graphics.newImage("ssss.png");ssssimg:setFilter("nearest", "nearest")
 	accentimg = love.graphics.newImage("accent.png");accentimg:setFilter("nearest", "nearest")
 	
-	menumusic = love.audio.newSource("sounds/menu_back.ogg")
+	menumusic = love.audio.newSource("sounds/menu_back.ogg", "stream")
 	menumusic:setLooping(true)
 	menumusic:setVolume(0.01)
-	gamemusic = love.audio.newSource("sounds/game_back.ogg")
+	gamemusic = love.audio.newSource("sounds/game_back.ogg", "stream")
 	gamemusic:setLooping(true)
-	stabsound = love.audio.newSource("sounds/stab.ogg")
+	stabsound = love.audio.newSource("sounds/stab.ogg", "static")
 	
-	backsound = love.audio.newSource("sounds/back.ogg")
-	proceedsound = love.audio.newSource("sounds/proceed.ogg")
-	winningsound = love.audio.newSource("sounds/winning.ogg")
-	coinsound = love.audio.newSource("sounds/coin.ogg")
+	backsound = love.audio.newSource("sounds/back.ogg", "static")
+	proceedsound = love.audio.newSource("sounds/proceed.ogg", "static")
+	winningsound = love.audio.newSource("sounds/winning.ogg", "static")
+	coinsound = love.audio.newSource("sounds/coin.ogg", "static")
 	
 	loadlevels()
 	scale = 1
@@ -172,11 +168,7 @@ end
 
 function changescale(s)
 	scale = s
-	if love.graphics.setMode then
-		love.graphics.setMode(1024*scale, 768*scale, false, true)
-	elseif love.window.setMode then
-		love.window.setMode(1024*scale, 768*scale, {fullscreen=false, vsync=true})
-	end
+	love.window.setMode(1024*scale, 768*scale, {fullscreen=false, vsync=1})
 	
 	love.graphics.setLineWidth(1/scale)
 end
@@ -209,7 +201,7 @@ function love.update(dt)
 	end
 	currentbackground = b
 	
-	love.graphics.setBackgroundColor(b)
+	love.graphics.setBackgroundColor(b[1]/255, b[2]/255, b[3]/255)
 	
 	for i, v in pairs(backgroundblocks) do
 		v:update(dt)
@@ -254,7 +246,7 @@ function love.draw()
 	end
 end
 
-function love.keypressed(key, unicode)
+function love.keypressed(key)
 	if gamestate == "game" then
 		game_keypressed(key)
 	elseif gamestate == "menu" then
@@ -345,12 +337,12 @@ function loadmap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if not love.filesystem.getInfo("maps/" .. name .. ".txt") or not love.filesystem.getInfo("maps/" .. name .. ".png") then
 		return false
 	end
 	
 	--LOAD OPTIONS	
-	local txtcontents = love.filesystem.read("maps/" .. name .. ".txt")
+	local txtcontents = love.filesystem.read("maps/" .. name .. ".txt"):gsub("\r", "")
 	
 	goaltime = 60.00
 	goalsteps = 100
@@ -405,6 +397,7 @@ function loadmap(name)
 		for z = 1, mapdepth do
 			for x = 1, mapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*mapdepth-1 )
+				r, g, b = round(r*255), round(g*255), round(b*255)
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -452,12 +445,12 @@ function loadmenumap(name)
 		name = string.sub(name, 1, -5)
 	end
 	
-	if love.filesystem.exists("maps/" .. name .. ".txt") == false or love.filesystem.exists("maps/" .. name .. ".png") == false then
+	if not love.filesystem.getInfo("maps/" .. name .. ".txt") or not love.filesystem.getInfo("maps/" .. name .. ".png") then
 		return false
 	end
 	
 	--LOAD OPTIONS	
-	local txtcontents = love.filesystem.read("maps/" .. name .. ".txt")
+	local txtcontents = love.filesystem.read("maps/" .. name .. ".txt"):gsub("\r", "")
 	
 	local s1 = txtcontents:split("\n")
 	for i = 1, #s1 do
@@ -497,6 +490,7 @@ function loadmenumap(name)
 		for z = 1, menumapdepth do
 			for x = 1, menumapwidth do
 				local r, g, b, a = imgdata:getPixel( x-1, z+(y-1)*menumapdepth-1 )
+				r, g, b = round(r*255), round(g*255), round(b*255)
 				
 				for i = 1, #tilecolors do
 					if r == tilecolors[i][1] and g == tilecolors[i][2] and b == tilecolors[i][3] then
@@ -559,14 +553,14 @@ function drawtile(cox, coy, coz, tile, xd, yd, zd)
 		if perspective ~= "up" then
 			if playerx == cox and playery == coy and playerz == coz then
 				local x, y = convertGRDtoSCR(pl.drawx, pl.drawy, pl.drawz)
-				love.graphics.setColor(255, 255, 255, 255*fadecolor)
+				setcolor(255, 255, 255, 255*fadecolor)
 				if won == false then
-					love.graphics.drawq(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-					love.graphics.setColor(255, 255, 255, 255*coinglowa)
+					love.graphics.draw(playerimg, playerquad[1], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					setcolor(255, 255, 255, 255*coinglowa)
 					love.graphics.draw(coinglowimg, round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale/4, playerscale/4, 29, 89)
 				else
-					love.graphics.drawq(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
-					love.graphics.setColor(0, 255, 0, 255*fadecolor)
+					love.graphics.draw(playerimg, playerquad[2], round(x), round(y+halfboxwidth*pitch*0.6), 0, playerscale, playerscale, 10, 20)
+					setcolor(0, 255, 0, 255*fadecolor)
 					love.graphics.rectangle("fill", round(x)-2*playerscale, round(y+halfboxwidth*pitch*0.6)-16*playerscale-winwindowtimer/1*3*playerscale, 4*playerscale, winwindowtimer/1*3*playerscale)
 				end
 			end
@@ -576,7 +570,7 @@ function drawtile(cox, coy, coz, tile, xd, yd, zd)
 	for i, v in pairs(coins) do
 		if v[1] == cox and v[2] == coy and v[3] == coz then
 			local x, y = convertGRDtoSCR(cox, coy, coz)
-			love.graphics.setColor(255, 255, 255, 255*fadecolor)
+			setcolor(255, 255, 255, 255*fadecolor)
 			love.graphics.draw(coinimg, round(x), round(y+halfboxwidth*pitch*0.6-(math.sin(rainbowi*pi2)+1)*halfboxwidth/6+3*playerscale), 0, playerscale, playerscale, 10, 20)
 		end
 	end
@@ -592,13 +586,13 @@ function drawbox(x, y, tile)
 	if tile.facevisible[5] then
 		if drawfaces then
 			local r, g, b, a = unpack(tile.facecolor[5])
-			lg_setColor(r*shadowtop, g*shadowtop, b*shadowtop, (a or 255)*fillfadecolor)
+			lg_setColor(r*shadowtop/255, g*shadowtop/255, b*shadowtop/255, (a or 255)/255*fillfadecolor)
 			lg_polygon("fill", point1[1], point1[2], point2[1], point2[2], point3[1], point3[2], point4[1], point4[2])
 		end
 		
 		if drawgrid then
 			local r, g, b, a = unpack(tile.gridcolor[1])
-			lg_setColor(r*shadowtop, g*shadowtop, b*shadowtop, (a or 255)*gridfadecolor)
+			lg_setColor(r*shadowtop/255, g*shadowtop/255, b*shadowtop/255, (a or 255)/255*gridfadecolor)
 			drawlinepolygon(point1[1], point1[2], point2[1], point2[2], point3[1], point3[2], point4[1], point4[2])
 		end
 	end
@@ -667,13 +661,13 @@ function drawbox(x, y, tile)
 		if tile.facevisible[side2] then
 			if drawfaces then
 				local r, g, b, a = unpack(tile.facecolor[side2])
-				lg_setColor(r*shadow1, g*shadow1, b*shadow1, (a or 255)*fillfadecolor)
+				lg_setColor(r*shadow1/255, g*shadow1/255, b*shadow1/255, (a or 255)/255*fillfadecolor)
 				lg_polygon("fill", newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
 			end
 			
 			if drawgrid then
 				local r, g, b, a = unpack(tile.gridcolor[2])
-				lg_setColor(r*shadow1, g*shadow1, b*shadow1, (a or 255)*gridfadecolor)
+				lg_setColor(r*shadow1/255, g*shadow1/255, b*shadow1/255, (a or 255)/255*gridfadecolor)
 				drawlinepolygon(newpoint2[1], newpoint2[2], newpoint3[1], newpoint3[2], newpoint6[1], newpoint6[2], newpoint5[1], newpoint5[2])
 			end
 		end
@@ -683,13 +677,13 @@ function drawbox(x, y, tile)
 		if tile.facevisible[side1] then
 			if drawfaces then
 				local r, g, b, a = unpack(tile.facecolor[side1])
-				lg_setColor(r*shadow2, g*shadow2, b*shadow2, (a or 255)*fillfadecolor)
+				lg_setColor(r*shadow2/255, g*shadow2/255, b*shadow2/255, (a or 255)/255*fillfadecolor)
 				lg_polygon("fill", newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
 			end
 			
 			if drawgrid then
 				local r, g, b, a = unpack(tile.gridcolor[2])
-				lg_setColor(r*shadow2, g*shadow2, b*shadow2, (a or 255)*gridfadecolor)
+				lg_setColor(r*shadow2/255, g*shadow2/255, b*shadow2/255, (a or 255)/255*gridfadecolor)
 				drawlinepolygon(newpoint1[1], newpoint1[2], newpoint2[1], newpoint2[2], newpoint5[1], newpoint5[2], newpoint4[1], newpoint4[2])
 			end
 		end
@@ -721,7 +715,7 @@ function calculatevars()
 	
 	
 	shadowtop = 1-boxheightmod^2*shadowtopfactor
-	shadow1 = (1-math.abs((math.pi/2-math.mod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
+	shadow1 = (1-math.abs((math.pi/2-math.fmod(rotation+math.pi/4, math.pi/2)))*(1/(math.pi/2)))
 	shadow2 = 1-shadow1
 	
 	shadow1 = shadow1*shadowfactor+(1-shadowfactor)
@@ -737,7 +731,7 @@ function round(num, idp)
 end
 
 function loadsave()
-	if not love.filesystem.exists("save.txt") then
+	if not love.filesystem.getInfo("save.txt") then
 		return
 	end
 	
@@ -829,15 +823,15 @@ function rotatedsquare(mode, x, y, r, d)
 end
 
 function drawblock(x, y, width, height, fillcolor, outlinecolor, r)
-	if math.mod((r or 0), math.pi/2) ~= 0 then --Rotated
-		love.graphics.setColor(unpack(fillcolor))
+	if math.fmod((r or 0), math.pi/2) ~= 0 then --Rotated
+		setcolor(unpack(fillcolor))
 		rotatedsquare("fill", x+width/2+.5, y+height/2+.5, r or 0, width-1)
-		love.graphics.setColor(unpack(outlinecolor))
+		setcolor(unpack(outlinecolor))
 		rotatedsquare("line", x+width/2+.5, y+height/2+.5, r or 0, width)
 	else --not rotated
-		love.graphics.setColor(unpack(fillcolor))
+		setcolor(unpack(fillcolor))
 		love.graphics.rectangle("fill", x+1, y+1, width-1, height-1)
-		love.graphics.setColor(unpack(outlinecolor))
+		setcolor(unpack(outlinecolor))
 		love.graphics.rectangle("line", x+.5, y+.5, width, height)
 	end
 end
