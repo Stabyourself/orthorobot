@@ -23,6 +23,7 @@ end
 
 --löve 11 draws text lower than 0.10 did
 local textoffsets = setmetatable({}, {__mode = "k"})
+local plainfonts = setmetatable({}, {__mode = "k"})
 local function textoffset()
 	return textoffsets[love.graphics.getFont()] or 0
 end
@@ -31,6 +32,7 @@ function newgamefont(size, dpiscale)
 	local font = love.graphics.newFont("font.ttf", size, "normal", dpiscale)
 	local plain = love.graphics.newFont("font.ttf", size, "normal", 1)
 	textoffsets[font] = plain:getBaseline() - math.floor(plain:getHeight()/1.25 + 0.5)
+	plainfonts[font] = plain
 	return font
 end
 
@@ -49,8 +51,26 @@ function love.graphics.print(text, x, y, ...)
 end
 
 local lg_printf = love.graphics.printf
-function love.graphics.printf(text, x, y, ...)
-	return lg_printf(text, x, (y or 0) - textoffset(), ...)
+function love.graphics.printf(text, x, y, limit, align, ...)
+	local plain = isweb and plainfonts[love.graphics.getFont()]
+	if plain and limit and select("#", ...) == 0 then
+		--wrap where the 1:1 font does or text runs out of the box
+		local _, lines = plain:getWrap(tostring(text), limit)
+		local lineheight = plain:getHeight()*plain:getLineHeight()
+		for i, line in ipairs(lines) do
+			local lx = x
+			if align == "right" then
+				lx = x + limit - plain:getWidth(line)
+			elseif align == "center" then
+				lx = x + (limit - plain:getWidth(line))/2
+			end
+			local w, sharpw = plain:getWidth(line), love.graphics.getFont():getWidth(line)
+			local sx = sharpw > 0 and w/sharpw or 1
+			lg_print(line, lx, (y or 0) - textoffset() + (i-1)*lineheight, 0, sx, 1)
+		end
+		return
+	end
+	return lg_printf(text, x, (y or 0) - textoffset(), limit, align, ...)
 end
 
 local lg_polygon = love.graphics.polygon
@@ -318,7 +338,14 @@ end
 
 function mygraphicssetScissor(x, y, w, h)
 	if x and y and w and h then
-		love.graphics.setScissor(x*scale, y*scale, w*scale, h*scale)
+		if isweb then
+			--round outwards or outlines get cut off
+			local x1, y1 = math.floor(x*scale), math.floor(y*scale)
+			local x2, y2 = math.ceil((x+w)*scale), math.ceil((y+h)*scale)
+			love.graphics.setScissor(x1, y1, x2-x1, y2-y1)
+		else
+			love.graphics.setScissor(x*scale, y*scale, w*scale, h*scale)
+		end
 	else
 		love.graphics.setScissor()
 	end
