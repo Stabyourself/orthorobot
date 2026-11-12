@@ -222,7 +222,7 @@ function menu_update(dt)
 	local speed = math.abs(rot)*2+0.005
 	
 	--pitch = (math.abs(rot))/pi05*0.3
-	pitchadd = ((love.mouse.getY()-menuoffset)-330)/screenheight * 0.2
+	pitchadd = ((mymousegetY()-menuoffset)-330)/screenheight * 0.2
 	pitchadd = math.max(math.min(pitchadd, 1), 0)
 	pitch = pitchadd
 	

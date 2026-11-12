@@ -24,11 +24,23 @@ end
 --löve 11 draws text lower than 0.10 did
 local textoffsets = setmetatable({}, {__mode = "k"})
 local function textoffset()
-	local font = love.graphics.getFont()
-	if not textoffsets[font] then
-		textoffsets[font] = font:getBaseline() - math.floor(font:getHeight()/1.25 + 0.5)
-	end
-	return textoffsets[font]
+	return textoffsets[love.graphics.getFont()] or 0
+end
+
+function newgamefont(size, dpiscale)
+	local font = love.graphics.newFont("font.ttf", size, "normal", dpiscale)
+	local plain = love.graphics.newFont("font.ttf", size, "normal", 1)
+	textoffsets[font] = plain:getBaseline() - math.floor(plain:getHeight()/1.25 + 0.5)
+	return font
+end
+
+function loadfonts(dpiscale)
+	menufont = newgamefont(40, dpiscale)
+	helpfont = newgamefont(30, dpiscale)
+	winwindowtitlefont = newgamefont(23, dpiscale)
+	levelselectfont = newgamefont(20, dpiscale)
+	winwindowfont = newgamefont(15, dpiscale)
+	coinsfont = newgamefont(11, dpiscale)
 end
 
 local lg_print = love.graphics.print
@@ -59,12 +71,7 @@ function love.load()
 	
 	math.randomseed(os.time());math.random();math.random()
 	
-	menufont = love.graphics.newFont( "font.ttf", 40)
-	helpfont = love.graphics.newFont( "font.ttf", 30)
-	winwindowtitlefont = love.graphics.newFont( "font.ttf", 23)
-	levelselectfont = love.graphics.newFont( "font.ttf", 20)
-	winwindowfont = love.graphics.newFont( "font.ttf", 15)
-	coinsfont = love.graphics.newFont( "font.ttf", 11)
+	loadfonts()
 	love.graphics.setFont( menufont )
 	
 	areyousurewidth = menufont:getWidth( "Are you sure?" )
@@ -126,6 +133,9 @@ function love.load()
 	
 	coinimg = love.graphics.newImage("coin.png");coinimg:setFilter("nearest", "nearest")
 	scanlineimg = love.graphics.newImage("scanlines.png");scanlineimg:setFilter("nearest", "nearest")
+	if isweb then
+		scanlineimg:setFilter("linear", "linear") --nearest makes bands at weird scales
+	end
 	
 	textavatarimg = love.graphics.newImage("textavatar.png");textavatarimg:setFilter("nearest", "nearest")
 	
@@ -170,9 +180,6 @@ function love.load()
 	loadlevels()
 	scale = 1
 	loadsave()
-	if isweb then
-		scale = 1 --the page scales the canvas to fit the browser window
-	end
 	currentmap = unlockedlevels
 	
 	loadmenumap("menu")
@@ -181,9 +188,13 @@ function love.load()
 	
 	skipupdate = true
 	 
-	love.graphics.setLineWidth(1/scale)
-	if scale ~= 1 then
-		changescale(scale)
+	if isweb then
+		fitwindow(love.graphics.getDimensions())
+	else
+		love.graphics.setLineWidth(1/scale)
+		if scale ~= 1 then
+			changescale(scale)
+		end
 	end
 	
 	screenwidth = 1024
@@ -195,6 +206,19 @@ function changescale(s)
 	love.window.setMode(1024*scale, 768*scale, {fullscreen=false, vsync=1})
 	
 	love.graphics.setLineWidth(1/scale)
+end
+
+function fitwindow(w, h)
+	scale = math.min(w/1024, h/768)
+	local pixels = scale*love.graphics.getDPIScale()
+	love.graphics.setLineWidth(math.max(1, round(pixels))/pixels)
+	loadfonts(pixels)
+end
+
+function love.resize(w, h)
+	if isweb then
+		fitwindow(w, h)
+	end
 end
 
 function love.update(dt)
