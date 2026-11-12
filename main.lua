@@ -12,6 +12,7 @@
 
 lbutton = 1
 rbutton = 2
+isweb = love.system.getOS() == "Web"
 
 function setcolor(r, g, b, a) --0-255 to 0-1
 	if type(r) == "table" then
@@ -149,6 +150,9 @@ function love.load()
 	loadlevels()
 	scale = 1
 	loadsave()
+	if isweb then
+		scale = 1 --the page scales the canvas to fit the browser window
+	end
 	currentmap = unlockedlevels
 	
 	loadmenumap("menu")

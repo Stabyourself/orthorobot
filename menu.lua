@@ -57,10 +57,17 @@ function menu_load(x, y)
 		end
 		
 		menubuttons = {}
-		table.insert(menubuttons, menubutton:new(screenwidth/2, 300, "Play levels", button_start))
-		table.insert(menubuttons, menubutton:new(screenwidth/2, 400, "Help", button_help))
-		table.insert(menubuttons, menubutton:new(screenwidth/2, 500, "Credits", button_credits))
+		local menuy = 300
+		if isweb then
+			menuy = 350 --no exit button
+		end
+		table.insert(menubuttons, menubutton:new(screenwidth/2, menuy, "Play levels", button_start))
+		table.insert(menubuttons, menubutton:new(screenwidth/2, menuy+100, "Help", button_help))
+		table.insert(menubuttons, menubutton:new(screenwidth/2, menuy+200, "Credits", button_credits))
 		table.insert(menubuttons, menubutton:new(screenwidth/2, 600, "Exit", button_exit))
+		if isweb then
+			menubuttons[4].active = false
+		end
 		table.insert(menubuttons, menubutton:new(screenwidth/2, -45, "Back", button_back))
 		table.insert(menubuttons, menubutton:new(screenwidth/2-100, 1100, "Yes", button_yes))
 		table.insert(menubuttons, menubutton:new(screenwidth/2+100, 1100, "No", button_no))
@@ -77,7 +84,7 @@ function menu_load(x, y)
 		end
 		
 		sizebutton.width = 680
-		sizebutton.active = true
+		sizebutton.active = not isweb
 	else
 		menubuttons[5].active = true
 	end
@@ -326,7 +333,9 @@ function menu_draw()
 		menubuttons[1]:draw()
 		menubuttons[2]:draw()
 		menubuttons[3]:draw()
-		menubuttons[4]:draw()
+		if menubuttons[4].active then
+			menubuttons[4]:draw()
+		end
 	end
 	
 	if menuoffset > 0 then --LEVEL LIST
@@ -431,7 +440,9 @@ function menu_draw()
 	love.graphics.translate(-menuoffsetx, -menuoffset)
 	
 	pausebuttons["menutogglesound"]:draw()
-	sizebutton:draw()
+	if sizebutton.active then
+		sizebutton:draw()
+	end
 	
 	love.graphics.setFont(winwindowfont)
 	setcolor(255, 255, 255, 100*fadecolor)
