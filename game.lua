@@ -424,7 +424,8 @@ function game_draw()
 		
 		love.graphics.setFont(winwindowfont)
 		setcolor(190, 206, 248, alpha*255)
-		local s = string.sub(filetable[currentmap].text, 1, math.max(0, string.len(filetable[currentmap].text)*(texttimer/texttime)-1))
+		--0.10 rounded string.sub arguments, 11 cuts them off
+		local s = string.sub(filetable[currentmap].text, 1, roundhalfeven(math.max(0, string.len(filetable[currentmap].text)*(texttimer/texttime)-1)))
 		if math.fmod(rainbowi, 0.1) > 0.033 then
 			s = s .. "_"
 		end
@@ -1226,4 +1227,13 @@ function game_mousereleased(x, y, button)
 			end
 		end
 	end
+end
+
+function roundhalfeven(n)
+	local f = math.floor(n)
+	local d = n - f
+	if d > 0.5 or (d == 0.5 and f % 2 == 1) then
+		return f + 1
+	end
+	return f
 end

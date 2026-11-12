@@ -21,6 +21,26 @@ function setcolor(r, g, b, a) --0-255 to 0-1
 	love.graphics.setColor(r/255, g/255, b/255, (a or 255)/255)
 end
 
+--löve 11 draws text lower than 0.10 did
+local textoffsets = setmetatable({}, {__mode = "k"})
+local function textoffset()
+	local font = love.graphics.getFont()
+	if not textoffsets[font] then
+		textoffsets[font] = font:getBaseline() - math.floor(font:getHeight()/1.25 + 0.5)
+	end
+	return textoffsets[font]
+end
+
+local lg_print = love.graphics.print
+function love.graphics.print(text, x, y, ...)
+	return lg_print(text, x, (y or 0) - textoffset(), ...)
+end
+
+local lg_printf = love.graphics.printf
+function love.graphics.printf(text, x, y, ...)
+	return lg_printf(text, x, (y or 0) - textoffset(), ...)
+end
+
 local lg_polygon = love.graphics.polygon
 local lg_setColor = love.graphics.setColor
 
