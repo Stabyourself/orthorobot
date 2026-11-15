@@ -314,7 +314,8 @@ function love.draw()
 	end
 end
 
-function love.keypressed(key)
+function love.keypressed(key, scancode)
+	key = scancode
 	if gamestate == "game" then
 		game_keypressed(key)
 	elseif gamestate == "menu" then
